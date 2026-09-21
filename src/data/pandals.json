@@ -1,0 +1,57 @@
+[
+  {
+    "id": "fd-block",
+    "name": "FD Block Sarbojanin",
+    "area": "FD Block, Sector III",
+    "address": "FD Block, Sector III, Bidhannagar, Kolkata",
+    "lat": 22.5867,
+    "lng": 88.4172,
+    "description": "One of Salt Lake's long-running community pujas, known for its themed pandal design.",
+    "timings": "6:00 AM – 11:00 PM",
+    "verified": false
+  },
+  {
+    "id": "ad-block",
+    "name": "AD Block Community Puja",
+    "area": "AD Block, Sector I",
+    "address": "AD Block, Sector I, Bidhannagar, Kolkata",
+    "lat": 22.5915,
+    "lng": 88.4098,
+    "description": "A neighbourhood favourite with a strong cultural programme lineup through the pujas.",
+    "timings": "6:00 AM – 11:00 PM",
+    "verified": false
+  },
+  {
+    "id": "karunamoyee",
+    "name": "Karunamoyee Puja Committee",
+    "area": "Karunamoyee",
+    "address": "Karunamoyee Crossing, Bidhannagar, Kolkata",
+    "lat": 22.5836,
+    "lng": 88.4145,
+    "description": "Large-scale pandal near Karunamoyee bus stand, easily reachable by public transport.",
+    "timings": "6:00 AM – 11:30 PM",
+    "verified": false
+  },
+  {
+    "id": "chinar-park",
+    "name": "Chinar Park Sarbojanin",
+    "area": "Chinar Park",
+    "address": "Chinar Park, New Town Road, Bidhannagar, Kolkata",
+    "lat": 22.6178,
+    "lng": 88.4491,
+    "description": "One of the bigger pujas on the New Town side of the commissionerate area.",
+    "timings": "6:00 AM – 11:00 PM",
+    "verified": false
+  },
+  {
+    "id": "central-park",
+    "name": "Central Park Sarbojanin",
+    "area": "Central Park, Sector I",
+    "address": "Central Park, Sector I, Bidhannagar, Kolkata",
+    "lat": 22.5878,
+    "lng": 88.4088,
+    "description": "Centrally located puja beside Central Park, a popular evening walking spot.",
+    "timings": "6:00 AM – 11:00 PM",
+    "verified": false
+  }
+]

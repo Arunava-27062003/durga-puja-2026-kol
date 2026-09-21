@@ -1,61 +1,79 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
+import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
+import { ExternalLink } from '@/components/external-link';
+import { PlaceCard } from '@/components/place-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import pandals from '@/data/pandals.json';
+import { useLocation } from '@/hooks/use-location';
+import { getDistanceKm } from '@/utils/distance';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+const SOCIAL_LINKS: { label: string; href: `https://${string}` }[] = [
+  { label: 'Facebook', href: 'https://www.facebook.com/BidhannagarPoliceCommissionerate' },
+  { label: 'Twitter / X', href: 'https://twitter.com/BidhannagarPC' },
+];
 
 export default function HomeScreen() {
+  const location = useLocation();
+
+  const nearestPandal =
+    location.status === 'ready'
+      ? [...pandals]
+          .map((p) => ({ ...p, distanceKm: getDistanceKm(location.coords, p) }))
+          .sort((a, b) => a.distanceKm - b.distanceKm)[0]
+      : undefined;
+
   return (
     <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <ScrollView contentContainerStyle={styles.content}>
           <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
+            Bidhannagar{'\n'}Durga Puja
           </ThemedText>
-        </ThemedView>
+          <ThemedText type="small" themeColor="textSecondary">
+            Bidhannagar Police Commissionerate
+          </ThemedText>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+          {nearestPandal && (
+            <ThemedView style={styles.section}>
+              <ThemedText type="smallBold">Nearest Pandal</ThemedText>
+              <PlaceCard
+                name={nearestPandal.name}
+                address={nearestPandal.address}
+                distanceKm={nearestPandal.distanceKm}
+                lat={nearestPandal.lat}
+                lng={nearestPandal.lng}
+              />
+            </ThemedView>
+          )}
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+          <ThemedView style={styles.section}>
+            <Link href="/nearby/index" style={styles.linkRow}>
+              <ThemedText type="linkPrimary" style={styles.linkPrimaryText}>
+                Nearby Hospitals, Pharmacy & More →
+              </ThemedText>
+            </Link>
+            <Link href="/about" style={styles.linkRow}>
+              <ThemedText type="linkPrimary" style={styles.linkPrimaryText}>
+                About Durga Puja & This App →
+              </ThemedText>
+            </Link>
+          </ThemedView>
 
-        {Platform.OS === 'web' && <WebBadge />}
+          <ThemedView style={styles.section}>
+            <ThemedText type="smallBold">Follow Us</ThemedText>
+            <ThemedView style={styles.socialRow}>
+              {SOCIAL_LINKS.map((link) => (
+                <ExternalLink key={link.href} href={link.href}>
+                  <ThemedText type="linkPrimary">{link.label}</ThemedText>
+                </ExternalLink>
+              ))}
+            </ThemedView>
+          </ThemedView>
+        </ScrollView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -64,35 +82,33 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    alignItems: 'center',
   },
   safeArea: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
+    width: '100%',
     maxWidth: MaxContentWidth,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
+  content: {
     paddingHorizontal: Spacing.four,
+    paddingBottom: BottomTabInset + Spacing.four,
     gap: Spacing.four,
   },
   title: {
-    textAlign: 'center',
+    fontSize: 32,
+    lineHeight: 38,
   },
-  code: {
-    textTransform: 'uppercase',
+  section: {
+    gap: Spacing.two,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  socialRow: {
+    flexDirection: 'row',
+    gap: Spacing.four,
+  },
+  linkRow: {
+    paddingVertical: Spacing.one,
+  },
+  linkPrimaryText: {
+    fontSize: 16,
   },
 });

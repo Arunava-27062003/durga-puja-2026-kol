@@ -33,6 +33,12 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Bidhannagar Durga Puja to use your location to find nearby pandals and services."
+        }
       ]
     ],
     "experiments": {

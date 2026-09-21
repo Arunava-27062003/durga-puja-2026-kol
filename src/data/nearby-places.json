@@ -1,0 +1,92 @@
+[
+  {
+    "id": "amri-salt-lake",
+    "name": "AMRI Hospital, Salt Lake",
+    "category": "hospital",
+    "address": "JC-16 & 17, Sector III, Bidhannagar, Kolkata",
+    "lat": 22.5726,
+    "lng": 88.4166,
+    "phone": "",
+    "verified": false
+  },
+  {
+    "id": "peerless-salt-lake",
+    "name": "Peerless Hospital",
+    "category": "hospital",
+    "address": "360 Panchasayar, off Salt Lake, Kolkata",
+    "lat": 22.5001,
+    "lng": 88.3931,
+    "phone": "",
+    "verified": false
+  },
+  {
+    "id": "apollo-pharmacy-cc",
+    "name": "Apollo Pharmacy, CC Block",
+    "category": "pharmacy",
+    "address": "CC Block Market, Sector I, Bidhannagar, Kolkata",
+    "lat": 22.5859,
+    "lng": 88.4067,
+    "phone": "",
+    "verified": false
+  },
+  {
+    "id": "bidhannagar-north-ps",
+    "name": "Bidhannagar North Police Station",
+    "category": "police",
+    "address": "Sector II, Bidhannagar, Kolkata",
+    "lat": 22.5793,
+    "lng": 88.4114,
+    "phone": "",
+    "verified": false
+  },
+  {
+    "id": "bidhannagar-south-ps",
+    "name": "Bidhannagar South Police Station",
+    "category": "police",
+    "address": "Sector I, Bidhannagar, Kolkata",
+    "lat": 22.5824,
+    "lng": 88.4053,
+    "phone": "",
+    "verified": false
+  },
+  {
+    "id": "karunamoyee-bus-stand",
+    "name": "Karunamoyee Bus Stand",
+    "category": "bus",
+    "address": "Karunamoyee, Bidhannagar, Kolkata",
+    "lat": 22.5836,
+    "lng": 88.4145,
+    "phone": "",
+    "verified": false
+  },
+  {
+    "id": "sector-v-metro",
+    "name": "Sector V Metro Station",
+    "category": "metro",
+    "address": "Sector V, Bidhannagar, Kolkata",
+    "lat": 22.5754,
+    "lng": 88.4297,
+    "phone": "",
+    "verified": false
+  },
+  {
+    "id": "central-park-metro",
+    "name": "Central Park Metro Station",
+    "category": "metro",
+    "address": "Sector II, Bidhannagar, Kolkata",
+    "lat": 22.5798,
+    "lng": 88.4159,
+    "phone": "",
+    "verified": false
+  },
+  {
+    "id": "central-park-parking",
+    "name": "Central Park Parking Zone",
+    "category": "parking",
+    "address": "Central Park, Sector I, Bidhannagar, Kolkata",
+    "lat": 22.5878,
+    "lng": 88.4088,
+    "phone": "",
+    "verified": false
+  }
+]

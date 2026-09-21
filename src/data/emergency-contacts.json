@@ -1,0 +1,51 @@
+[
+  {
+    "id": "police",
+    "label": "Police",
+    "phone": "100",
+    "category": "police",
+    "verified": true
+  },
+  {
+    "id": "fire",
+    "label": "Fire Brigade",
+    "phone": "101",
+    "category": "fire",
+    "verified": true
+  },
+  {
+    "id": "ambulance",
+    "label": "Ambulance",
+    "phone": "102",
+    "category": "medical",
+    "verified": true
+  },
+  {
+    "id": "women-helpline",
+    "label": "Women Helpline",
+    "phone": "1091",
+    "category": "safety",
+    "verified": true
+  },
+  {
+    "id": "disaster-management",
+    "label": "Disaster Management",
+    "phone": "108",
+    "category": "medical",
+    "verified": true
+  },
+  {
+    "id": "bidhannagar-control-room",
+    "label": "Bidhannagar Police Control Room",
+    "phone": "",
+    "category": "police",
+    "verified": false
+  },
+  {
+    "id": "bd-van-support",
+    "label": "BD Van Support",
+    "phone": "",
+    "category": "support",
+    "verified": false
+  }
+]

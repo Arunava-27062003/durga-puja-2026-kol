@@ -20,12 +20,14 @@ export default function AppTabs() {
         />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="explore">
-        <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
-        />
+      <NativeTabs.Trigger name="pandals">
+        <NativeTabs.Trigger.Label>Pandals</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="building.columns" md="temple_hindu" />
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="emergency">
+        <NativeTabs.Trigger.Label>Emergency</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="cross.case.fill" md="emergency" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );
