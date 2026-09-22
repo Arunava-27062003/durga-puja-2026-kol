@@ -1,7 +1,9 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { DistanceFilter } from '@/components/distance-filter';
 import { PlaceCard } from '@/components/place-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -12,13 +14,31 @@ import { getDistanceKm } from '@/utils/distance';
 
 export default function PandalsScreen() {
   const location = useLocation();
+  const params = useLocalSearchParams<{ radiusKm?: string }>();
+  const [radiusKm, setRadiusKm] = useState<number | null>(
+    params.radiusKm ? Number(params.radiusKm) : null
+  );
+  // NativeTabs keeps this screen mounted across tab switches, so a later
+  // navigation's radiusKm must be re-synced here — the useState initializer
+  // above only runs once, on the very first mount. Comparing during render
+  // (not in an effect) is React's documented pattern for this reset case.
+  const [syncedParam, setSyncedParam] = useState(params.radiusKm);
+  if (params.radiusKm !== syncedParam) {
+    setSyncedParam(params.radiusKm);
+    setRadiusKm(params.radiusKm ? Number(params.radiusKm) : null);
+  }
 
-  const sorted: (typeof pandals[number] & { distanceKm?: number })[] =
+  const withDistance: (typeof pandals[number] & { distanceKm?: number })[] =
     location.status === 'ready'
       ? pandals
           .map((p) => ({ ...p, distanceKm: getDistanceKm(location.coords, p) }))
           .sort((a, b) => a.distanceKm - b.distanceKm)
       : pandals;
+
+  const sorted =
+    radiusKm !== null && location.status === 'ready'
+      ? withDistance.filter((p) => (p.distanceKm ?? Infinity) <= radiusKm)
+      : withDistance;
 
   return (
     <ThemedView style={styles.container}>
@@ -35,6 +55,12 @@ export default function PandalsScreen() {
               {location.status === 'denied' && (
                 <ThemedText type="small" themeColor="textSecondary" style={styles.hint}>
                   Enable location to see pandals sorted by distance.
+                </ThemedText>
+              )}
+              <DistanceFilter value={radiusKm} onChange={setRadiusKm} />
+              {sorted.length === 0 && (
+                <ThemedText type="small" themeColor="textSecondary" style={styles.hint}>
+                  No pandals within {radiusKm} KM. Try a wider radius.
                 </ThemedText>
               )}
             </>

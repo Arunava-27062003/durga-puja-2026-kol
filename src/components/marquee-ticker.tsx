@@ -38,9 +38,7 @@ export function MarqueeTicker({
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.textWrapper, { transform: [{ translateX: animatedValue }] }]}>
-        <Text style={styles.text} numberOfLines={1}>
-          {text}
-        </Text>
+        <Text style={styles.text}>{text}</Text>
       </Animated.View>
     </View>
   );
@@ -50,14 +48,24 @@ const styles = StyleSheet.create({
   container: {
     height: 34,
     backgroundColor: '#E53935',
-    justifyContent: 'center',
     overflow: 'hidden',
     width: '100%',
   },
   textWrapper: {
+    // Absolute + top/bottom (no left/right) makes Yoga size this by content
+    // width instead of stretching it to the container, which is what let the
+    // Text wrap onto multiple lines instead of laying out on one.
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
     flexDirection: 'row',
+    alignItems: 'center',
   },
   text: {
+    // An explicit oversized width guarantees single-line layout regardless
+    // of ambiguous flex/stretch sizing on ancestor views — RN Text only
+    // wraps when its own measured width is narrower than its content.
+    width: 1400,
     color: '#ffffff',
     fontSize: 14,
     fontWeight: '600',

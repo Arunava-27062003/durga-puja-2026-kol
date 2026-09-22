@@ -19,6 +19,7 @@ import { SymbolView } from 'expo-symbols';
 
 import { AudioPlayerButton } from '@/components/audio-player-button';
 import { FeedbackModal } from '@/components/feedback-modal';
+import { MapViewerModal } from '@/components/map-viewer-modal';
 import { MarqueeTicker } from '@/components/marquee-ticker';
 import { PujaGuideModal } from '@/components/puja-guide-modal';
 import { PulseRing } from '@/components/pulse-ring';
@@ -73,6 +74,7 @@ export default function HomeScreen() {
   const [showPujaGuide, setShowPujaGuide] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showSos, setShowSos] = useState(false);
+  const [showMap, setShowMap] = useState(false);
   const [selectedDistance, setSelectedDistance] = useState('1 KM');
   const [weather, setWeather] = useState({ temp: '33.0°C', location: 'Salt Lake, Kolkata' });
 
@@ -373,10 +375,8 @@ export default function HomeScreen() {
             ))}
           </View>
 
-          {/* Sponsor Ad Banner 1 */}
-          <Pressable
-            onPress={() => openUrl('https://www.wownews24x7.com/')}
-            style={styles.adBannerCard}>
+          {/* Puja Guide Map */}
+          <Pressable onPress={() => setShowMap(true)} style={styles.adBannerCard}>
             <Image
               source={require('@/assets/images/puja_guide_1.jpg')}
               style={styles.adBannerImg}
@@ -397,7 +397,12 @@ export default function HomeScreen() {
                 Find nearby Durga Puja pandals in your area.
               </Text>
               <Pressable
-                onPress={() => router.push('/pandals')}
+                onPress={() =>
+                  router.push({
+                    pathname: '/pandals',
+                    params: { radiusKm: String(parseFloat(selectedDistance)) },
+                  })
+                }
                 style={({ pressed }) => [styles.cardExploreBtn, pressed && styles.pressed]}>
                 <Text style={styles.cardExploreBtnText}>EXPLORE →</Text>
               </Pressable>
@@ -417,7 +422,12 @@ export default function HomeScreen() {
                 Find nearby hospitals & emergency clinics in your area.
               </Text>
               <Pressable
-                onPress={() => router.push('/nearby')}
+                onPress={() =>
+                  router.push({
+                    pathname: '/nearby',
+                    params: { radiusKm: String(parseFloat(selectedDistance)) },
+                  })
+                }
                 style={({ pressed }) => [styles.cardExploreBtn, pressed && styles.pressed]}>
                 <Text style={styles.cardExploreBtnText}>EXPLORE →</Text>
               </Pressable>
@@ -444,7 +454,12 @@ export default function HomeScreen() {
               <Text style={styles.featureCardTitle}>Nearby Pharmacy</Text>
               <Text style={styles.featureCardSub}>Find 24/7 pharmacies in your area.</Text>
               <Pressable
-                onPress={() => router.push('/nearby')}
+                onPress={() =>
+                  router.push({
+                    pathname: '/nearby',
+                    params: { radiusKm: String(parseFloat(selectedDistance)) },
+                  })
+                }
                 style={({ pressed }) => [styles.cardExploreBtn, pressed && styles.pressed]}>
                 <Text style={styles.cardExploreBtnText}>EXPLORE →</Text>
               </Pressable>
@@ -511,6 +526,7 @@ export default function HomeScreen() {
         <PujaGuideModal visible={showPujaGuide} onClose={() => setShowPujaGuide(false)} />
         <FeedbackModal visible={showFeedback} onClose={() => setShowFeedback(false)} />
         <SosModal visible={showSos} onClose={() => setShowSos(false)} />
+        <MapViewerModal visible={showMap} onClose={() => setShowMap(false)} />
       </SafeAreaView>
     </View>
   );

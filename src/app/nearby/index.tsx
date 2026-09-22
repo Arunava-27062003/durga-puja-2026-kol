@@ -1,7 +1,9 @@
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { DistanceFilter } from '@/components/distance-filter';
 import { PlaceCard } from '@/components/place-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -14,15 +16,31 @@ const CATEGORIES = ['all', ...new Set(places.map((p) => p.category))] as const;
 
 export default function NearbyScreen() {
   const location = useLocation();
+  const params = useLocalSearchParams<{ radiusKm?: string }>();
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>('all');
+  const [radiusKm, setRadiusKm] = useState<number | null>(
+    params.radiusKm ? Number(params.radiusKm) : null
+  );
+  // See pandals/index.tsx — a persisted screen instance won't re-run the
+  // useState initializer on a later navigation with a new radiusKm param.
+  // Comparing during render is React's documented pattern for this reset.
+  const [syncedParam, setSyncedParam] = useState(params.radiusKm);
+  if (params.radiusKm !== syncedParam) {
+    setSyncedParam(params.radiusKm);
+    setRadiusKm(params.radiusKm ? Number(params.radiusKm) : null);
+  }
 
   const filtered = category === 'all' ? places : places.filter((p) => p.category === category);
-  const sorted: (typeof places[number] & { distanceKm?: number })[] =
+  const withDistance: (typeof places[number] & { distanceKm?: number })[] =
     location.status === 'ready'
       ? filtered
           .map((p) => ({ ...p, distanceKm: getDistanceKm(location.coords, p) }))
           .sort((a, b) => a.distanceKm - b.distanceKm)
       : filtered;
+  const sorted =
+    radiusKm !== null && location.status === 'ready'
+      ? withDistance.filter((p) => (p.distanceKm ?? Infinity) <= radiusKm)
+      : withDistance;
 
   return (
     <ThemedView style={styles.container}>
@@ -51,6 +69,12 @@ export default function NearbyScreen() {
                   </Pressable>
                 ))}
               </ThemedView>
+              <DistanceFilter value={radiusKm} onChange={setRadiusKm} />
+              {sorted.length === 0 && (
+                <ThemedText type="small" themeColor="textSecondary" style={styles.hint}>
+                  No places within {radiusKm} KM. Try a wider radius.
+                </ThemedText>
+              )}
             </>
           }
           renderItem={({ item }) => (
