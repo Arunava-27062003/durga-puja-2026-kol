@@ -51,7 +51,7 @@ export default function HomeScreen() {
           )}
 
           <ThemedView style={styles.section}>
-            <Link href="/nearby/index" style={styles.linkRow}>
+            <Link href="/nearby" style={styles.linkRow}>
               <ThemedText type="linkPrimary" style={styles.linkPrimaryText}>
                 Nearby Hospitals, Pharmacy & More →
               </ThemedText>
