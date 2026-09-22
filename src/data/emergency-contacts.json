@@ -1,16 +1,23 @@
 [
   {
-    "id": "police",
-    "label": "Police",
-    "phone": "100",
+    "id": "police-control",
+    "label": "Bidhannagar Police Control",
+    "phone": "9147889448",
     "category": "police",
     "verified": true
   },
   {
-    "id": "fire",
-    "label": "Fire Brigade",
-    "phone": "101",
-    "category": "fire",
+    "id": "bd-van-support",
+    "label": "BD Van Support / Traffic",
+    "phone": "+919147889470",
+    "category": "support",
+    "verified": true
+  },
+  {
+    "id": "police",
+    "label": "Police Emergency (SOS)",
+    "phone": "100",
+    "category": "police",
     "verified": true
   },
   {
@@ -21,31 +28,80 @@
     "verified": true
   },
   {
+    "id": "fire",
+    "label": "Fire Brigade (Control)",
+    "phone": "101",
+    "category": "fire",
+    "verified": true
+  },
+  {
+    "id": "fire-saltlake",
+    "label": "Salt Lake Fire Station",
+    "phone": "03323575293",
+    "category": "fire",
+    "verified": true
+  },
+  {
+    "id": "fire-birati",
+    "label": "Birati Fire Station",
+    "phone": "03325341014",
+    "category": "fire",
+    "verified": true
+  },
+  {
     "id": "women-helpline",
     "label": "Women Helpline",
-    "phone": "1091",
+    "phone": "1090",
     "category": "safety",
     "verified": true
   },
   {
-    "id": "disaster-management",
-    "label": "Disaster Management",
-    "phone": "108",
-    "category": "medical",
+    "id": "ps-north",
+    "label": "Bidhannagar North PS",
+    "phone": "9147889451",
+    "category": "police",
     "verified": true
   },
   {
-    "id": "bidhannagar-control-room",
-    "label": "Bidhannagar Police Control Room",
-    "phone": "",
+    "id": "ps-south",
+    "label": "Bidhannagar South PS",
+    "phone": "9147889456",
     "category": "police",
-    "verified": false
+    "verified": true
   },
   {
-    "id": "bd-van-support",
-    "label": "BD Van Support",
-    "phone": "",
-    "category": "support",
-    "verified": false
+    "id": "ps-east",
+    "label": "Bidhannagar East PS",
+    "phone": "9147889461",
+    "category": "police",
+    "verified": true
+  },
+  {
+    "id": "ps-sector5",
+    "label": "Electronic Complex PS (Sec V)",
+    "phone": "9147889468",
+    "category": "police",
+    "verified": true
+  },
+  {
+    "id": "ps-newtown",
+    "label": "New Town PS",
+    "phone": "9147889474",
+    "category": "police",
+    "verified": true
+  },
+  {
+    "id": "ps-baguiati",
+    "label": "Baguiati PS",
+    "phone": "9147889481",
+    "category": "police",
+    "verified": true
+  },
+  {
+    "id": "ps-airport",
+    "label": "Airport (NSCBI) PS",
+    "phone": "9147889486",
+    "category": "police",
+    "verified": true
   }
 ]

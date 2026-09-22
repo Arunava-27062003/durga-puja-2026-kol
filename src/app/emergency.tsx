@@ -1,4 +1,5 @@
-import { Linking, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CallButton } from '@/components/call-button';
@@ -12,13 +13,25 @@ export default function EmergencyScreen() {
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView contentContainerStyle={styles.content}>
-          <ThemedText type="title" style={styles.title}>
-            Emergency
-          </ThemedText>
+          <View style={styles.brandHeader}>
+            <Image
+              source={require('@/assets/images/bidhannagar_police.png')}
+              style={styles.logo}
+              contentFit="contain"
+            />
+            <View>
+              <ThemedText type="title" style={styles.title}>
+                Emergency
+              </ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">
+                Bidhannagar Police Helpline Directory
+              </ThemedText>
+            </View>
+          </View>
 
           <Pressable style={styles.sos} onPress={() => Linking.openURL('tel:100')}>
             <ThemedText type="subtitle" style={styles.sosText}>
-              SOS — Call Police
+              SOS — Call Police (100)
             </ThemedText>
           </Pressable>
 
@@ -56,9 +69,18 @@ const styles = StyleSheet.create({
     paddingBottom: BottomTabInset + Spacing.four,
     gap: Spacing.four,
   },
+  brandHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+  },
+  logo: {
+    width: 60,
+    height: 60,
+  },
   title: {
-    fontSize: 32,
-    lineHeight: 38,
+    fontSize: 28,
+    lineHeight: 34,
   },
   sos: {
     backgroundColor: '#D32F2F',

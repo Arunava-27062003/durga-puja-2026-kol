@@ -39,6 +39,14 @@
         {
           "locationWhenInUsePermission": "Allow Bidhannagar Durga Puja to use your location to find nearby pandals and services."
         }
+      ],
+      "expo-video",
+      "expo-audio",
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/Poppins-Regular.ttf", "./assets/fonts/Poppins-Italic.ttf"]
+        }
       ]
     ],
     "experiments": {
