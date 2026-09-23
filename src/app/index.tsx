@@ -934,18 +934,19 @@ const styles = StyleSheet.create({
   },
   footerSection: {
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 16,
     marginBottom: 20,
+    marginHorizontal: -16,
   },
   footerArt: {
-    width: SCREEN_WIDTH - 60,
-    height: 220,
+    width: Math.min(SCREEN_WIDTH, 480),
+    height: Math.min(SCREEN_WIDTH, 480),
   },
   footerCredit: {
     fontFamily: 'Poppins-Regular',
-    fontSize: 12,
+    fontSize: 13,
     color: '#9CA3AF',
-    marginTop: 8,
+    marginTop: 10,
     fontWeight: '500',
   },
 
