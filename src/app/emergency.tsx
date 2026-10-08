@@ -18,7 +18,7 @@ export default function EmergencyScreen() {
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.brandHeader}>
             <Image
-              source={require('@/assets/images/bidhannagar_police.png')}
+              source={require('@/assets/images/bidhannagar_police.jpg')}
               style={styles.logo}
               contentFit="contain"
             />

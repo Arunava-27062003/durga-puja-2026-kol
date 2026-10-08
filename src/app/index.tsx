@@ -88,7 +88,7 @@ export default function HomeScreen() {
     return (
       <View style={styles.landingContainer}>
         <ImageBackground
-          source={require('@/assets/images/bg.png')}
+          source={require('@/assets/images/bg.jpg')}
           style={styles.landingBg}
           resizeMode="cover">
           <SafeAreaView style={styles.landingSafeArea} edges={['top', 'bottom']}>
@@ -99,7 +99,7 @@ export default function HomeScreen() {
                   onPress={() => openUrl('https://www.facebook.com/bdncitypolice')}
                   style={styles.badgeCircle}>
                   <Image
-                    source={require('@/assets/images/bidhannagar_police.png')}
+                    source={require('@/assets/images/bidhannagar_police.jpg')}
                     style={styles.badgeImg}
                     contentFit="contain"
                   />
