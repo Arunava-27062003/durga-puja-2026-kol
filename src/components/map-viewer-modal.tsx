@@ -13,12 +13,13 @@ const IMAGE_HEIGHT = SCREEN_WIDTH / IMAGE_RATIO;
 
 type Props = {
   visible: boolean;
+  imageUrl?: string;
   onClose: () => void;
 };
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 
-export function MapViewerModal({ visible, onClose }: Props) {
+export function MapViewerModal({ visible, imageUrl, onClose }: Props) {
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
   const translateX = useSharedValue(0);
@@ -121,7 +122,7 @@ export function MapViewerModal({ visible, onClose }: Props) {
           <GestureDetector gesture={gesture}>
             <Animated.View style={styles.gestureArea}>
               <AnimatedImage
-                source={require('@/assets/images/puja_guide_1_full.jpg')}
+                source={imageUrl ? { uri: imageUrl } : require('@/assets/images/puja_guide_1_full.jpg')}
                 style={[styles.map, animatedStyle]}
                 resizeMode="contain"
               />

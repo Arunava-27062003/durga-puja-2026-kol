@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,17 +7,17 @@ import { DistanceFilter } from '@/components/distance-filter';
 import { PlaceCard } from '@/components/place-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useAppContent } from '@/content/app-content';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import places from '@/data/nearby-places.json';
 import { useLocation } from '@/hooks/use-location';
 import { getDistanceKm } from '@/utils/distance';
 
-const CATEGORIES = ['all', ...new Set(places.map((p) => p.category))] as const;
-
 export default function NearbyScreen() {
+  const { content } = useAppContent();
+  const { config, nearbyPlaces: places } = content;
   const location = useLocation();
   const params = useLocalSearchParams<{ radiusKm?: string }>();
-  const [category, setCategory] = useState<(typeof CATEGORIES)[number]>('all');
+  const [category, setCategory] = useState('all');
   const [radiusKm, setRadiusKm] = useState<number | null>(
     params.radiusKm ? Number(params.radiusKm) : null
   );
@@ -30,12 +30,22 @@ export default function NearbyScreen() {
     setRadiusKm(params.radiusKm ? Number(params.radiusKm) : null);
   }
 
+  const categories = useMemo(
+    () => ['all', ...new Set(places.map((place) => place.category))],
+    [places],
+  );
+
   const filtered = category === 'all' ? places : places.filter((p) => p.category === category);
   const withDistance: (typeof places[number] & { distanceKm?: number })[] =
     location.status === 'ready'
       ? filtered
-          .map((p) => ({ ...p, distanceKm: getDistanceKm(location.coords, p) }))
-          .sort((a, b) => a.distanceKm - b.distanceKm)
+          .map((p) => ({
+            ...p,
+            ...(p.lat !== null && p.lng !== null
+              ? { distanceKm: getDistanceKm(location.coords, { lat: p.lat, lng: p.lng }) }
+              : {}),
+          }))
+          .sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity))
       : filtered;
   const sorted =
     radiusKm !== null && location.status === 'ready'
@@ -60,7 +70,7 @@ export default function NearbyScreen() {
                 </ThemedText>
               )}
               <ThemedView style={styles.filterRow}>
-                {CATEGORIES.map((c) => (
+                {categories.map((c) => (
                   <Pressable
                     key={c}
                     onPress={() => setCategory(c)}
@@ -84,6 +94,8 @@ export default function NearbyScreen() {
               distanceKm={item.distanceKm}
               lat={item.lat}
               lng={item.lng}
+              kind="nearby"
+              thumbnailSource={item.imageUrl ?? config.media.parkingFallbackImageUrl}
             />
           )}
         />

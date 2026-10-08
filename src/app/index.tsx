@@ -25,39 +25,15 @@ import { PujaGuideModal } from '@/components/puja-guide-modal';
 import { PulseRing } from '@/components/pulse-ring';
 import { SosModal } from '@/components/sos-modal';
 import { VideoPromoPlayer } from '@/components/video-promo-player';
+import { useAppContent } from '@/content/app-content';
 
-const SOCIAL_LINKS = [
-  {
-    name: 'whatsapp',
-    url: 'https://whatsapp.com/channel/0029Vb6ktnC1Hsq1kV1ZEI04',
-    bg: '#25D366',
-    icon: 'whatsapp',
-  },
-  {
-    name: 'youtube',
-    url: 'https://www.youtube.com/',
-    bg: '#FF0000',
-    icon: 'youtube',
-  },
-  {
-    name: 'facebook',
-    url: 'https://www.facebook.com/bdncitypolice',
-    bg: '#1877F2',
-    icon: 'facebook',
-  },
-  {
-    name: 'twitter',
-    url: 'https://twitter.com/bidhannagarpc',
-    bg: '#1DA1F2',
-    icon: 'x-twitter',
-  },
-  {
-    name: 'instagram',
-    url: 'https://www.instagram.com/bidhannagarcitypolice',
-    bg: '#E4405F',
-    icon: 'instagram',
-  },
-] as const;
+const SOCIAL_META = {
+  whatsapp: { bg: '#25D366', icon: 'whatsapp' },
+  youtube: { bg: '#FF0000', icon: 'youtube' },
+  facebook: { bg: '#1877F2', icon: 'facebook' },
+  x: { bg: '#1DA1F2', icon: 'x-twitter' },
+  instagram: { bg: '#E4405F', icon: 'instagram' },
+} as const;
 
 const QUICK_SERVICES = [
   { label: 'Police', query: 'police', icon: 'shield.lefthalf.filled', faIcon: 'shield-halved', color: '#1976D2' },
@@ -70,6 +46,8 @@ const QUICK_SERVICES = [
 ] as const;
 
 export default function HomeScreen() {
+  const { content } = useAppContent();
+  const { config } = content;
   const [showLanding, setShowLanding] = useState(true);
   const [showPujaGuide, setShowPujaGuide] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -77,6 +55,10 @@ export default function HomeScreen() {
   const [showMap, setShowMap] = useState(false);
   const [selectedDistance, setSelectedDistance] = useState('1 KM');
   const [weather, setWeather] = useState({ temp: '33.0°C', location: 'Salt Lake, Kolkata' });
+  const socialLinks = Object.entries(config.socialLinks).flatMap(([name, url]) => {
+    const meta = SOCIAL_META[name as keyof typeof SOCIAL_META];
+    return meta ? [{ name, url, ...meta }] : [];
+  });
 
   useEffect(() => {
     // Fetch live weather from WeatherAPI with fallback
@@ -153,7 +135,7 @@ export default function HomeScreen() {
               {/* Wishes Card */}
               <View style={styles.glassCard}>
                 <Text style={styles.wishesTitle}>
-                  Bidhannagar Police wishes you{'\n'}Happy Durga Pujo
+                  {config.home.welcomeMessage}
                 </Text>
               </View>
 
@@ -214,7 +196,7 @@ export default function HomeScreen() {
 
           {/* Social Icons Row */}
           <View style={styles.socialGroup}>
-            {SOCIAL_LINKS.map((s) => (
+            {socialLinks.map((s) => (
               <Pressable
                 key={s.name}
                 onPress={() => openUrl(s.url)}
@@ -236,7 +218,7 @@ export default function HomeScreen() {
           {/* 6 Quick Action Pills (2-Column Grid) */}
           <View style={styles.actionGrid}>
             <Pressable
-              onPress={() => dial('102')}
+              onPress={() => dial(config.emergency.ambulancePhone ?? '102')}
               style={({ pressed }) => [styles.actionPill, pressed && styles.pressed]}>
               <FontAwesome6 name="truck-medical" size={16} color="#ffffff" />
               <Text style={styles.actionPillText}>AMBULANCE</Text>
@@ -250,7 +232,7 @@ export default function HomeScreen() {
             </Pressable>
 
             <Pressable
-              onPress={() => dial('9147889448')}
+              onPress={() => dial(config.emergency.policeHelpPhone ?? config.emergency.phone)}
               style={({ pressed }) => [styles.actionPill, pressed && styles.pressed]}>
               <SymbolView
                 name={{ ios: 'phone.fill', android: 'call', web: 'call' }}
@@ -261,7 +243,7 @@ export default function HomeScreen() {
             </Pressable>
 
             <Pressable
-              onPress={() => dial('101')}
+              onPress={() => dial(config.emergency.firePhone ?? '101')}
               style={({ pressed }) => [styles.actionPill, pressed && styles.pressed]}>
               <SymbolView
                 name={{ ios: 'flame.fill', android: 'local_fire_department', web: 'local_fire_department' }}
@@ -272,7 +254,7 @@ export default function HomeScreen() {
             </Pressable>
 
             <Pressable
-              onPress={() => openUrl('https://www.bidhannagarpolice.in/parkingzones')}
+              onPress={() => openUrl(config.externalLinks.parkingZones)}
               style={({ pressed }) => [styles.actionPill, pressed && styles.pressed]}>
               <SymbolView
                 name={{ ios: 'parkingsign', android: 'local_parking', web: 'local_parking' }}
@@ -283,7 +265,7 @@ export default function HomeScreen() {
             </Pressable>
 
             <Pressable
-              onPress={() => dial('9147889470')}
+              onPress={() => dial(config.emergency.bdVanPhone ?? config.emergency.phone)}
               style={({ pressed }) => [styles.actionPill, pressed && styles.pressed]}>
               <SymbolView
                 name={{ ios: 'car.fill', android: 'directions_car', web: 'directions_car' }}
@@ -295,7 +277,7 @@ export default function HomeScreen() {
           </View>
 
           {/* Tech Cyber Quiz Orange Pill Banner */}
-          <Pressable onPress={() => openUrl('https://forms.gle/N7m5F7L1wqhArheb6')}>
+          <Pressable onPress={() => openUrl(config.externalLinks.cyberQuiz)}>
             {({ pressed }) => (
               <LinearGradient
                 colors={['#FF8A00', '#FFC266']}
@@ -344,12 +326,12 @@ export default function HomeScreen() {
 
           {/* Embedded Promo Video Player */}
           <View style={styles.videoSection}>
-            <VideoPromoPlayer />
+            <VideoPromoPlayer url={config.media.promoVideoUrl} />
           </View>
 
           {/* Running Marquee Ticker */}
           <View style={styles.marqueeSection}>
-            <MarqueeTicker />
+            <MarqueeTicker text={config.announcements.join('     ')} />
           </View>
 
           {/* Explore Nearby Filter Section */}
@@ -525,8 +507,17 @@ export default function HomeScreen() {
         {/* Modals */}
         <PujaGuideModal visible={showPujaGuide} onClose={() => setShowPujaGuide(false)} />
         <FeedbackModal visible={showFeedback} onClose={() => setShowFeedback(false)} />
-        <SosModal visible={showSos} onClose={() => setShowSos(false)} />
-        <MapViewerModal visible={showMap} onClose={() => setShowMap(false)} />
+        <SosModal
+          visible={showSos}
+          phone={config.emergency.phone}
+          whatsapp={config.emergency.whatsapp}
+          onClose={() => setShowSos(false)}
+        />
+        <MapViewerModal
+          visible={showMap}
+          imageUrl={config.media.guideMapImageUrl}
+          onClose={() => setShowMap(false)}
+        />
       </SafeAreaView>
     </View>
   );

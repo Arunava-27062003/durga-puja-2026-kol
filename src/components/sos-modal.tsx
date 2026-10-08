@@ -3,20 +3,19 @@ import { Alert, Linking, Modal, Pressable, StyleSheet, Text, View } from 'react-
 import * as Location from 'expo-location';
 import { SymbolView } from 'expo-symbols';
 
-const SOS_PHONE = '+919147889470';
-const SOS_WHATSAPP = '919147889470';
-
 type Props = {
   visible: boolean;
+  phone: string;
+  whatsapp?: string;
   onClose: () => void;
 };
 
-export function SosModal({ visible, onClose }: Props) {
+export function SosModal({ visible, phone, whatsapp, onClose }: Props) {
   const [sendingLocation, setSendingLocation] = useState(false);
 
   const handleCall = () => {
     onClose();
-    Linking.openURL(`tel:${SOS_PHONE}`).catch(() => {});
+    Linking.openURL(`tel:${phone}`).catch(() => {});
   };
 
   const handleWhatsApp = async () => {
@@ -35,7 +34,7 @@ export function SosModal({ visible, onClose }: Props) {
     setSendingLocation(false);
     onClose();
     Linking.openURL(
-      `https://wa.me/${SOS_WHATSAPP}?text=${encodeURIComponent(message)}`
+      `https://wa.me/${whatsapp ?? phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`
     ).catch(() => {
       Alert.alert('WhatsApp not available', 'Could not open WhatsApp on this device.');
     });

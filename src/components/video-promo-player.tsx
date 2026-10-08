@@ -1,11 +1,11 @@
 import { StyleSheet, View } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 
-const PROMO_VIDEO_URL =
+const DEFAULT_PROMO_VIDEO_URL =
   'https://churchkonnect.s3.ap-south-1.amazonaws.com/videos/Durga+Puja+Promo+BDNPC.mp4';
 
-export function VideoPromoPlayer() {
-  const player = useVideoPlayer(PROMO_VIDEO_URL, (p) => {
+export function VideoPromoPlayer({ url }: { url?: string }) {
+  const player = useVideoPlayer(url ?? DEFAULT_PROMO_VIDEO_URL, (p) => {
     p.loop = true;
   });
 

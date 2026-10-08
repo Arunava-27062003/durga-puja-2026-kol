@@ -5,10 +5,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CallButton } from '@/components/call-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useAppContent } from '@/content/app-content';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import contacts from '@/data/emergency-contacts.json';
 
 export default function EmergencyScreen() {
+  const { content } = useAppContent();
+  const { config, emergencyContacts } = content;
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -24,19 +27,19 @@ export default function EmergencyScreen() {
                 Emergency
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
-                Bidhannagar Police Helpline Directory
+                {config.policeName} Helpline Directory
               </ThemedText>
             </View>
           </View>
 
-          <Pressable style={styles.sos} onPress={() => Linking.openURL('tel:100')}>
+          <Pressable style={styles.sos} onPress={() => Linking.openURL(`tel:${config.emergency.phone}`)}>
             <ThemedText type="subtitle" style={styles.sosText}>
-              SOS — Call Police (100)
+              SOS — Call {config.emergency.label}
             </ThemedText>
           </Pressable>
 
           <ThemedView style={styles.grid}>
-            {contacts.map((c) => (
+            {emergencyContacts.map((c) => (
               <ThemedView key={c.id} type="backgroundElement" style={styles.card}>
                 <ThemedText type="smallBold">{c.label}</ThemedText>
                 {c.phone ? (

@@ -7,12 +7,14 @@ import { DistanceFilter } from '@/components/distance-filter';
 import { PlaceCard } from '@/components/place-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useAppContent } from '@/content/app-content';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import pandals from '@/data/pandals.json';
 import { useLocation } from '@/hooks/use-location';
 import { getDistanceKm } from '@/utils/distance';
 
 export default function PandalsScreen() {
+  const { content } = useAppContent();
+  const { config, pandals } = content;
   const location = useLocation();
   const params = useLocalSearchParams<{ radiusKm?: string }>();
   const [radiusKm, setRadiusKm] = useState<number | null>(
@@ -31,8 +33,13 @@ export default function PandalsScreen() {
   const withDistance: (typeof pandals[number] & { distanceKm?: number })[] =
     location.status === 'ready'
       ? pandals
-          .map((p) => ({ ...p, distanceKm: getDistanceKm(location.coords, p) }))
-          .sort((a, b) => a.distanceKm - b.distanceKm)
+          .map((p) => ({
+            ...p,
+            ...(p.lat !== null && p.lng !== null
+              ? { distanceKm: getDistanceKm(location.coords, { lat: p.lat, lng: p.lng }) }
+              : {}),
+          }))
+          .sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity))
       : pandals;
 
   const sorted =
@@ -72,6 +79,8 @@ export default function PandalsScreen() {
               distanceKm={item.distanceKm}
               lat={item.lat}
               lng={item.lng}
+              kind="pandal"
+              thumbnailSource={item.imageUrl ?? config.media.pandalFallbackImageUrl}
               onPress={() => router.push({ pathname: '/pandals/[id]', params: { id: item.id } })}
             />
           )}
