@@ -13,12 +13,16 @@ import { SymbolView } from 'expo-symbols';
 
 type Props = {
   visible: boolean;
+  imageUrls: string[];
   onClose: () => void;
 };
 
-export function PujaGuideModal({ visible, onClose }: Props) {
-  const [selectedPage, setSelectedPage] = useState<1 | 2>(1);
+export function PujaGuideModal({ visible, imageUrls, onClose }: Props) {
+  const [selectedPage, setSelectedPage] = useState(0);
   const screenWidth = Dimensions.get('window').width;
+  if (imageUrls.length === 0) return null;
+
+  const activePage = Math.min(selectedPage, imageUrls.length - 1);
 
   return (
     <Modal visible={visible} animationType="slide" transparent={false} onRequestClose={onClose}>
@@ -34,22 +38,18 @@ export function PujaGuideModal({ visible, onClose }: Props) {
           </Pressable>
         </View>
 
-        {/* Tab switch between Guide 1 and 2 */}
+        {/* Backend-configured guide pages */}
         <View style={styles.tabRow}>
-          <Pressable
-            onPress={() => setSelectedPage(1)}
-            style={[styles.tab, selectedPage === 1 && styles.activeTab]}>
-            <Text style={[styles.tabText, selectedPage === 1 && styles.activeTabText]}>
-              Guide Map 1
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setSelectedPage(2)}
-            style={[styles.tab, selectedPage === 2 && styles.activeTab]}>
-            <Text style={[styles.tabText, selectedPage === 2 && styles.activeTabText]}>
-              Guide Map 2
-            </Text>
-          </Pressable>
+          {imageUrls.map((imageUrl, index) => (
+            <Pressable
+              key={imageUrl}
+              onPress={() => setSelectedPage(index)}
+              style={[styles.tab, activePage === index && styles.activeTab]}>
+              <Text style={[styles.tabText, activePage === index && styles.activeTabText]}>
+                Guide Map {index + 1}
+              </Text>
+            </Pressable>
+          ))}
         </View>
 
         <ScrollView
@@ -57,11 +57,7 @@ export function PujaGuideModal({ visible, onClose }: Props) {
           minimumZoomScale={1}
           contentContainerStyle={styles.scrollContent}>
           <Image
-            source={
-              selectedPage === 1
-                ? require('@/assets/images/puja_guide_1.jpg')
-                : require('@/assets/images/puja_guide_2.jpg')
-            }
+            source={imageUrls[activePage]}
             style={[styles.image, { width: screenWidth, height: screenWidth * 1.4 }]}
             contentFit="contain"
           />

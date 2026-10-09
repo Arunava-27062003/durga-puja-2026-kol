@@ -7,19 +7,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const MIN_SCALE = 1;
 const MAX_SCALE = 4;
-const IMAGE_RATIO = 1878 / 2400;
+const DEFAULT_IMAGE_RATIO = 1878 / 2400;
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const IMAGE_HEIGHT = SCREEN_WIDTH / IMAGE_RATIO;
 
 type Props = {
   visible: boolean;
-  imageUrl?: string;
+  imageUrl: string;
+  imageAspectRatio?: number;
   onClose: () => void;
 };
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 
-export function MapViewerModal({ visible, imageUrl, onClose }: Props) {
+export function MapViewerModal({ visible, imageUrl, imageAspectRatio, onClose }: Props) {
+  const imageHeight = SCREEN_WIDTH / (imageAspectRatio ?? DEFAULT_IMAGE_RATIO);
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
   const translateX = useSharedValue(0);
@@ -122,8 +123,8 @@ export function MapViewerModal({ visible, imageUrl, onClose }: Props) {
           <GestureDetector gesture={gesture}>
             <Animated.View style={styles.gestureArea}>
               <AnimatedImage
-                source={imageUrl ? { uri: imageUrl } : require('@/assets/images/puja_guide_1_full.jpg')}
-                style={[styles.map, animatedStyle]}
+                source={{ uri: imageUrl }}
+                style={[styles.map, { height: imageHeight }, animatedStyle]}
                 resizeMode="contain"
               />
             </Animated.View>
@@ -199,6 +200,5 @@ const styles = StyleSheet.create({
   },
   map: {
     width: SCREEN_WIDTH,
-    height: IMAGE_HEIGHT,
   },
 });

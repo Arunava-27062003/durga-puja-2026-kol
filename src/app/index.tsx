@@ -55,6 +55,8 @@ export default function HomeScreen() {
   const [showMap, setShowMap] = useState(false);
   const [selectedDistance, setSelectedDistance] = useState('1 KM');
   const [weather, setWeather] = useState({ temp: '33.0°C', location: 'Salt Lake, Kolkata' });
+  const guideMapUrl = config.features.guideMap ? config.media.guideMapImageUrl : undefined;
+  const guideMapUrls = config.features.guideMap ? (config.media.guideMapImageUrls ?? []) : [];
   const socialLinks = Object.entries(config.socialLinks).flatMap(([name, url]) => {
     const meta = SOCIAL_META[name as keyof typeof SOCIAL_META];
     return meta ? [{ name, url, ...meta }] : [];
@@ -224,12 +226,14 @@ export default function HomeScreen() {
               <Text style={styles.actionPillText}>AMBULANCE</Text>
             </Pressable>
 
-            <Pressable
-              onPress={() => setShowPujaGuide(true)}
-              style={({ pressed }) => [styles.actionPill, pressed && styles.pressed]}>
-              <FontAwesome6 name="building-columns" size={16} color="#ffffff" />
-              <Text style={styles.actionPillText}>PUJA GUIDE</Text>
-            </Pressable>
+            {guideMapUrls.length > 0 ? (
+              <Pressable
+                onPress={() => setShowPujaGuide(true)}
+                style={({ pressed }) => [styles.actionPill, pressed && styles.pressed]}>
+                <FontAwesome6 name="building-columns" size={16} color="#ffffff" />
+                <Text style={styles.actionPillText}>PUJA GUIDE</Text>
+              </Pressable>
+            ) : null}
 
             <Pressable
               onPress={() => dial(config.emergency.policeHelpPhone ?? config.emergency.phone)}
@@ -359,14 +363,12 @@ export default function HomeScreen() {
             ))}
           </View>
 
-          {/* Puja Guide Map */}
-          <Pressable onPress={() => setShowMap(true)} style={styles.adBannerCard}>
-            <Image
-              source={require('@/assets/images/puja_guide_1.jpg')}
-              style={styles.adBannerImg}
-              contentFit="cover"
-            />
-          </Pressable>
+          {/* Backend-managed Puja Guide Map */}
+          {guideMapUrl ? (
+            <Pressable onPress={() => setShowMap(true)} style={styles.adBannerCard}>
+              <Image source={guideMapUrl} style={styles.adBannerImg} contentFit="cover" />
+            </Pressable>
+          ) : null}
 
           {/* Feature Card 1: Nearby Durga Puja */}
           <View style={styles.featureCard}>
@@ -507,7 +509,13 @@ export default function HomeScreen() {
         </View>
 
         {/* Modals */}
-        <PujaGuideModal visible={showPujaGuide} onClose={() => setShowPujaGuide(false)} />
+        {guideMapUrls.length > 0 ? (
+          <PujaGuideModal
+            visible={showPujaGuide}
+            imageUrls={guideMapUrls}
+            onClose={() => setShowPujaGuide(false)}
+          />
+        ) : null}
         <FeedbackModal visible={showFeedback} onClose={() => setShowFeedback(false)} />
         <SosModal
           visible={showSos}
@@ -515,11 +523,14 @@ export default function HomeScreen() {
           whatsapp={config.emergency.whatsapp}
           onClose={() => setShowSos(false)}
         />
-        <MapViewerModal
-          visible={showMap}
-          imageUrl={config.media.guideMapImageUrl}
-          onClose={() => setShowMap(false)}
-        />
+        {guideMapUrl ? (
+          <MapViewerModal
+            visible={showMap}
+            imageUrl={guideMapUrl}
+            imageAspectRatio={config.media.guideMapAspectRatio}
+            onClose={() => setShowMap(false)}
+          />
+        ) : null}
       </SafeAreaView>
     </View>
   );

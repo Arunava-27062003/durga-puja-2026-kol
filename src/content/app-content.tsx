@@ -66,6 +66,8 @@ export type AppConfig = {
     pandalFallbackImageUrl?: string;
     parkingFallbackImageUrl?: string;
     guideMapImageUrl?: string;
+    guideMapImageUrls?: string[];
+    guideMapAspectRatio?: number;
     promoVideoUrl?: string;
   };
   features: Record<string, boolean>;
@@ -84,7 +86,7 @@ export type AppContent = {
 
 const fallbackConfig: AppConfig = {
   contentVersion: 'bundled',
-  updatedAt: '2026-10-09T08:08:00.000Z',
+  updatedAt: '2026-10-09T08:23:44.399Z',
   displayName: 'Bidhannagar Durga Puja Guide 2026',
   policeName: 'Bidhannagar Police',
   district: 'Bidhannagar',
