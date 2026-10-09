@@ -1,10 +1,45 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Image } from 'expo-image';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import type { ComponentType } from 'react';
+import { Linking, Pressable, StyleSheet, Text, TurboModuleRegistry, View } from 'react-native';
+import type { WebViewProps } from 'react-native-webview';
+
+const EmbeddedWebView: ComponentType<WebViewProps> | null = TurboModuleRegistry.get(
+  'RNCWebViewModule',
+)
+  ? // The installed development APK may predate this native dependency.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('react-native-webview').WebView
+  : null;
 
 function youtubeVideoId(url: string) {
   return url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/i)?.[1];
+}
+
+function youtubeEmbedHtml(videoId: string) {
+  const embedUrl =
+    `https://www.youtube-nocookie.com/embed/${videoId}` +
+    `?autoplay=1&mute=1&playsinline=1&controls=1&rel=0&loop=1&playlist=${videoId}`;
+
+  return `<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <style>
+      html, body, iframe { width: 100%; height: 100%; margin: 0; padding: 0; border: 0; background: #000; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <iframe
+      src="${embedUrl}"
+      title="Bidhannagar Police promotional video"
+      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen>
+    </iframe>
+  </body>
+</html>`;
 }
 
 export function VideoPromoPlayer({ url }: { url?: string }) {
@@ -13,36 +48,61 @@ export function VideoPromoPlayer({ url }: { url?: string }) {
   const videoId = youtubeVideoId(url);
 
   if (videoId) {
-    const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    if (!EmbeddedWebView) return <YouTubeLinkFallback videoId={videoId} />;
 
     return (
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Watch promotional video on YouTube"
-        onPress={() => Linking.openURL(watchUrl)}
-        style={({ pressed }) => [styles.container, pressed && styles.pressed]}>
-        <Image
-          source={{ uri: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` }}
-          style={StyleSheet.absoluteFill}
-          contentFit="cover"
+      <View style={styles.container}>
+        <EmbeddedWebView
+          accessibilityLabel="Bidhannagar Police promotional video"
+          source={{
+            html: youtubeEmbedHtml(videoId),
+            baseUrl: 'https://durgapujaapi.iema.co',
+          }}
+          style={styles.webVideo}
+          allowsFullscreenVideo
+          allowsInlineMediaPlayback
+          mediaPlaybackRequiresUserAction={false}
+          javaScriptEnabled
+          domStorageEnabled
+          setSupportMultipleWindows={false}
         />
-        <View style={styles.overlay} />
-        <View style={styles.playButton}>
-          <FontAwesome6 name="youtube" size={30} color="#FFFFFF" />
-        </View>
-        <View style={styles.youtubeLabel}>
-          <Text style={styles.youtubeLabelText}>Watch on YouTube</Text>
-        </View>
-      </Pressable>
+      </View>
     );
   }
 
   return <DirectVideoPlayer url={url} />;
 }
 
+function YouTubeLinkFallback({ videoId }: { videoId: string }) {
+  const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Watch promotional video on YouTube"
+      onPress={() => Linking.openURL(watchUrl)}
+      style={({ pressed }) => [styles.container, pressed && styles.pressed]}>
+      <Image
+        source={{ uri: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` }}
+        style={StyleSheet.absoluteFill}
+        contentFit="cover"
+      />
+      <View style={styles.overlay} />
+      <View style={styles.playButton}>
+        <FontAwesome6 name="youtube" size={30} color="#FFFFFF" />
+      </View>
+      <View style={styles.youtubeLabel}>
+        <Text style={styles.youtubeLabelText}>Rebuild required for autoplay</Text>
+      </View>
+    </Pressable>
+  );
+}
+
 function DirectVideoPlayer({ url }: { url: string }) {
   const player = useVideoPlayer(url, (p) => {
     p.loop = true;
+    p.muted = true;
+    p.play();
   });
 
   return (
@@ -106,6 +166,10 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: 'Poppins-SemiBold',
     fontSize: 11,
+  },
+  webVideo: {
+    flex: 1,
+    backgroundColor: '#000000',
   },
   video: {
     width: '100%',
