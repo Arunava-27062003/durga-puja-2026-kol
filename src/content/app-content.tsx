@@ -84,7 +84,7 @@ export type AppContent = {
 
 const fallbackConfig: AppConfig = {
   contentVersion: 'bundled',
-  updatedAt: '2026-10-08T00:00:00.000Z',
+  updatedAt: '2026-10-09T08:08:00.000Z',
   displayName: 'Bidhannagar Durga Puja Guide 2026',
   policeName: 'Bidhannagar Police',
   district: 'Bidhannagar',
@@ -105,7 +105,7 @@ const fallbackConfig: AppConfig = {
   announcements: ['Bidhannagar Police wishes you happy Durga Puja.     মা এসেছেন !'],
   socialLinks: {
     whatsapp: 'https://whatsapp.com/channel/0029Vb6ktnC1Hsq1kV1ZEI04',
-    youtube: 'https://www.youtube.com/',
+    youtube: 'https://www.youtube.com/@Bidhannagar.CityPolice',
     facebook: 'https://www.facebook.com/bdncitypolice',
     x: 'https://twitter.com/bidhannagarpc',
     instagram: 'https://www.instagram.com/bidhannagarcitypolice',
@@ -114,7 +114,7 @@ const fallbackConfig: AppConfig = {
     cyberQuiz: 'https://forms.gle/N7m5F7L1wqhArheb6',
     parkingZones: 'https://www.bidhannagarpolice.in/parkingzones',
   },
-  media: { promoVideoUrl: 'https://churchkonnect.s3.ap-south-1.amazonaws.com/videos/Durga+Puja+Promo+BDNPC.mp4' },
+  media: {},
   features: { pandals: true, nearby: true, emergency: true, guideMap: true, promoVideo: true },
 };
 

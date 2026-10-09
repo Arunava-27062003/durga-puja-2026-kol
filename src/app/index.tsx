@@ -324,10 +324,12 @@ export default function HomeScreen() {
             ))}
           </ScrollView>
 
-          {/* Embedded Promo Video Player */}
-          <View style={styles.videoSection}>
-            <VideoPromoPlayer url={config.media.promoVideoUrl} />
-          </View>
+          {/* Backend-managed promo video */}
+          {config.features.promoVideo && config.media.promoVideoUrl ? (
+            <View style={styles.videoSection}>
+              <VideoPromoPlayer url={config.media.promoVideoUrl} />
+            </View>
+          ) : null}
 
           {/* Running Marquee Ticker */}
           <View style={styles.marqueeSection}>
