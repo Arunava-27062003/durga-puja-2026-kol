@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ExternalLink } from '@/components/external-link';
+import { ContentStatusCard } from '@/components/content-status-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
@@ -36,6 +37,8 @@ export default function AboutScreen() {
             <ThemedText type="smallBold">Organized by</ThemedText>
             <ThemedText type="default">Bidhannagar Police Commissionerate</ThemedText>
           </ThemedView>
+
+          <ContentStatusCard />
 
           <ThemedView style={styles.section}>
             <ThemedText type="smallBold">Feedback</ThemedText>

@@ -132,7 +132,7 @@ const fallbackContent: AppContent = {
 type ContentContextValue = {
   content: AppContent;
   source: 'bundled' | 'cached' | 'remote';
-  refresh: () => Promise<void>;
+  refresh: () => Promise<boolean>;
 };
 
 const ContentContext = createContext<ContentContextValue | null>(null);
@@ -178,8 +178,10 @@ export function AppContentProvider({ children }: PropsWithChildren) {
       setContent(remoteContent);
       setSource('remote');
       await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(remoteContent));
+      return true;
     } catch {
       // Keep the cached or bundled content when the network is unavailable.
+      return false;
     }
   }, []);
 
