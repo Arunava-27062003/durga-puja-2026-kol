@@ -42,18 +42,18 @@ function youtubeEmbedHtml(videoId: string) {
 </html>`;
 }
 
-export function VideoPromoPlayer({ url }: { url?: string }) {
+export function VideoPromoPlayer({ url, label = 'Police promotional video', fallbackLabel = 'Watch on YouTube' }: { url?: string; label?: string; fallbackLabel?: string }) {
   if (!url) return null;
 
   const videoId = youtubeVideoId(url);
 
   if (videoId) {
-    if (!EmbeddedWebView) return <YouTubeLinkFallback videoId={videoId} />;
+    if (!EmbeddedWebView) return <YouTubeLinkFallback videoId={videoId} label={fallbackLabel} />;
 
     return (
       <View style={styles.container}>
         <EmbeddedWebView
-          accessibilityLabel="Bidhannagar Police promotional video"
+          accessibilityLabel={label}
           source={{
             html: youtubeEmbedHtml(videoId),
             baseUrl: 'https://durgapujaapi.iema.co',
@@ -73,7 +73,7 @@ export function VideoPromoPlayer({ url }: { url?: string }) {
   return <DirectVideoPlayer url={url} />;
 }
 
-function YouTubeLinkFallback({ videoId }: { videoId: string }) {
+function YouTubeLinkFallback({ videoId, label }: { videoId: string; label: string }) {
   const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
 
   return (
@@ -92,7 +92,7 @@ function YouTubeLinkFallback({ videoId }: { videoId: string }) {
         <FontAwesome6 name="youtube" size={30} color="#FFFFFF" />
       </View>
       <View style={styles.youtubeLabel}>
-        <Text style={styles.youtubeLabelText}>Rebuild required for autoplay</Text>
+        <Text style={styles.youtubeLabelText}>{label}</Text>
       </View>
     </Pressable>
   );

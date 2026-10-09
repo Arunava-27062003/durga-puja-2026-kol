@@ -6,7 +6,7 @@ import { useLocalSearchParams } from 'expo-router';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { useAppContent } from '@/content/app-content';
+import { getCopy, useAppContent } from '@/content/app-content';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 
 export default function PandalDetailScreen() {
@@ -19,7 +19,7 @@ export default function PandalDetailScreen() {
     return (
       <ThemedView style={styles.container}>
         <SafeAreaView style={styles.safeArea} edges={['top']}>
-          <ThemedText>Pandal not found.</ThemedText>
+          <ThemedText>{getCopy(config, 'pandalNotFound', 'Pandal not found.')}</ThemedText>
         </SafeAreaView>
       </ThemedView>
     );
@@ -46,14 +46,14 @@ export default function PandalDetailScreen() {
           </ThemedText>
 
           <ThemedView style={styles.section}>
-            <ThemedText type="smallBold">Address</ThemedText>
+            <ThemedText type="smallBold">{getCopy(config, 'pandalAddress', 'Address')}</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
               {pandal.address}
             </ThemedText>
           </ThemedView>
 
           <ThemedView style={styles.section}>
-            <ThemedText type="smallBold">Timings</ThemedText>
+            <ThemedText type="smallBold">{getCopy(config, 'pandalTimings', 'Timings')}</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
               {pandal.timings}
             </ThemedText>
@@ -67,7 +67,7 @@ export default function PandalDetailScreen() {
                   `https://www.google.com/maps/search/?api=1&query=${pandal.lat},${pandal.lng}`,
                 )
               }>
-              Get Directions
+              {getCopy(config, 'directionsAction', 'Get Directions')}
             </ThemedText>
           ) : null}
         </ScrollView>

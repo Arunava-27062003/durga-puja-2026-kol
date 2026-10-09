@@ -15,10 +15,11 @@ type Props = {
   kind: 'pandal' | 'nearby';
   thumbnailSource?: ImageSource | string;
   onPress?: () => void;
+  directionsLabel?: string;
 };
 
 /** Shared list row for a pandal or nearby service: name, address, optional distance badge, directions link. */
-export function PlaceCard({ name, address, distanceKm, lat, lng, kind, thumbnailSource, onPress }: Props) {
+export function PlaceCard({ name, address, distanceKm, lat, lng, kind, thumbnailSource, onPress, directionsLabel = 'Get Directions' }: Props) {
   const fallback = kind === 'pandal'
     ? require('@/assets/images/durga-bg-card.jpg')
     : require('@/assets/images/police-bg-card.jpg');
@@ -53,7 +54,7 @@ export function PlaceCard({ name, address, distanceKm, lat, lng, kind, thumbnail
               onPress={() =>
                 Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`)
               }>
-              <ThemedText type="linkPrimary">Get Directions</ThemedText>
+              <ThemedText type="linkPrimary">{directionsLabel}</ThemedText>
             </Pressable>
           ) : null}
         </ThemedView>

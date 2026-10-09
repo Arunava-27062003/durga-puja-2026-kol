@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CallButton } from '@/components/call-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { useAppContent } from '@/content/app-content';
+import { getCopy, useAppContent } from '@/content/app-content';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 
 export default function EmergencyScreen() {
@@ -18,23 +18,24 @@ export default function EmergencyScreen() {
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.brandHeader}>
             <Image
-              source={require('@/assets/images/bidhannagar_police.jpg')}
+              source={config.media.policeLogoImageUrl ?? require('@/assets/images/bidhannagar_police.jpg')}
+              placeholder={require('@/assets/images/bidhannagar_police.jpg')}
               style={styles.logo}
               contentFit="contain"
             />
-            <View>
+            <View style={styles.brandCopy}>
               <ThemedText type="title" style={styles.title}>
-                Emergency
+                {getCopy(config, 'emergencyTitle', 'Emergency')}
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
-                {config.policeName} Helpline Directory
+                {getCopy(config, 'emergencySubtitle', `${config.policeName} Helpline Directory`)}
               </ThemedText>
             </View>
           </View>
 
           <Pressable style={styles.sos} onPress={() => Linking.openURL(`tel:${config.emergency.phone}`)}>
-            <ThemedText type="subtitle" style={styles.sosText}>
-              SOS — Call {config.emergency.label}
+            <ThemedText type="subtitle" style={styles.sosText} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.75}>
+              {getCopy(config, 'emergencySosLabel', `SOS — Call ${config.emergency.label}`)}
             </ThemedText>
           </Pressable>
 
@@ -47,7 +48,7 @@ export default function EmergencyScreen() {
                     {c.phone}
                   </ThemedText>
                 ) : null}
-                <CallButton phone={c.phone} label={`Call ${c.label}`} style={styles.callBtn} />
+                <CallButton phone={c.phone} label={`${getCopy(config, 'callAction', 'Call')} ${c.label}`} style={styles.callBtn} />
               </ThemedView>
             ))}
           </ThemedView>
@@ -81,6 +82,10 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
   },
+  brandCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
   title: {
     fontSize: 28,
     lineHeight: 34,
@@ -90,11 +95,13 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.three,
     paddingVertical: Spacing.four,
     alignItems: 'center',
+    paddingHorizontal: Spacing.three,
   },
   sosText: {
     color: '#ffffff',
-    fontSize: 24,
-    lineHeight: 30,
+    fontSize: 20,
+    lineHeight: 27,
+    textAlign: 'center',
   },
   grid: {
     gap: Spacing.two,
@@ -106,6 +113,6 @@ const styles = StyleSheet.create({
   },
   callBtn: {
     marginTop: Spacing.one,
-    alignSelf: 'flex-start',
+    alignSelf: 'stretch',
   },
 });

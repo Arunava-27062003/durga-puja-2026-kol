@@ -12,10 +12,12 @@ import { SymbolView } from 'expo-symbols';
 
 type Props = {
   visible: boolean;
+  endpoint?: string;
+  policeName?: string;
   onClose: () => void;
 };
 
-export function FeedbackModal({ visible, onClose }: Props) {
+export function FeedbackModal({ visible, endpoint, policeName = 'Bidhannagar Police', onClose }: Props) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
@@ -28,15 +30,21 @@ export function FeedbackModal({ visible, onClose }: Props) {
       return;
     }
 
+    if (!endpoint) {
+      Alert.alert('Unavailable', 'Feedback is temporarily unavailable. Please try again later.');
+      return;
+    }
+
     try {
-      // Try sending to the backend feedback endpoint if online
-      fetch('https://durgapuja.sanjhbati.click/contact/feedback', {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, phone, message, rating }),
-      }).catch(() => {});
+      });
+      if (!response.ok) throw new Error(`Feedback request failed with ${response.status}`);
     } catch {
-      // Ignore network errors
+      Alert.alert('Could not send feedback', 'Check your internet connection and try again.');
+      return;
     }
 
     setSubmitted(true);
@@ -63,7 +71,7 @@ export function FeedbackModal({ visible, onClose }: Props) {
           </View>
 
           <Text style={styles.subtitle}>
-            Help Bidhannagar Police improve your Durga Puja experience.
+            Help {policeName} improve your Durga Puja experience.
           </Text>
 
           {/* Star Rating */}

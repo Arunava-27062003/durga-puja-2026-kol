@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, type ComponentProps } from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -25,7 +25,7 @@ import { PujaGuideModal } from '@/components/puja-guide-modal';
 import { PulseRing } from '@/components/pulse-ring';
 import { SosModal } from '@/components/sos-modal';
 import { VideoPromoPlayer } from '@/components/video-promo-player';
-import { useAppContent } from '@/content/app-content';
+import { getCopy, useAppContent } from '@/content/app-content';
 
 const SOCIAL_META = {
   whatsapp: { bg: '#25D366', icon: 'whatsapp' },
@@ -35,14 +35,14 @@ const SOCIAL_META = {
   instagram: { bg: '#E4405F', icon: 'instagram' },
 } as const;
 
-const QUICK_SERVICES = [
-  { label: 'Police', query: 'police', icon: 'shield.lefthalf.filled', faIcon: 'shield-halved', color: '#1976D2' },
-  { label: 'Hospital', query: 'hospital', icon: 'cross.fill', faIcon: 'hospital', color: '#D32F2F' },
-  { label: 'Bus Stands', query: 'bus', icon: 'bus.fill', faIcon: 'bus', color: '#E64A19' },
-  { label: 'Metro', query: 'metro', icon: 'tram.fill', faIcon: 'train', color: '#FFA000' },
-  { label: 'Pharmacy', query: 'pharmacy', icon: 'pills.fill', faIcon: 'pills', color: '#388E3C' },
-  { label: 'Toilets', query: 'toilets', icon: 'figure.stand', faIcon: 'restroom', color: '#7B1FA2' },
-  { label: 'Cafe', query: 'cafe', icon: 'cup.and.saucer.fill', faIcon: 'mug-saucer', color: '#5D4037' },
+const FALLBACK_QUICK_SERVICES = [
+  { label: 'Police', query: 'police', icon: 'shield-halved', color: '#1976D2' },
+  { label: 'Hospital', query: 'hospital', icon: 'hospital', color: '#D32F2F' },
+  { label: 'Bus Stands', query: 'bus', icon: 'bus', color: '#E64A19' },
+  { label: 'Metro', query: 'metro', icon: 'train', color: '#FFA000' },
+  { label: 'Pharmacy', query: 'pharmacy', icon: 'pills', color: '#388E3C' },
+  { label: 'Toilets', query: 'toilets', icon: 'restroom', color: '#7B1FA2' },
+  { label: 'Cafe', query: 'cafe', icon: 'mug-saucer', color: '#5D4037' },
 ] as const;
 
 export default function HomeScreen() {
@@ -54,28 +54,20 @@ export default function HomeScreen() {
   const [showSos, setShowSos] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [selectedDistance, setSelectedDistance] = useState('1 KM');
-  const [weather, setWeather] = useState({ temp: '33.0°C', location: 'Salt Lake, Kolkata' });
   const guideMapUrl = config.features.guideMap ? config.media.guideMapImageUrl : undefined;
   const guideMapUrls = config.features.guideMap ? (config.media.guideMapImageUrls ?? []) : [];
   const socialLinks = Object.entries(config.socialLinks).flatMap(([name, url]) => {
     const meta = SOCIAL_META[name as keyof typeof SOCIAL_META];
     return meta ? [{ name, url, ...meta }] : [];
   });
-
-  useEffect(() => {
-    // Fetch live weather from WeatherAPI with fallback
-    fetch('https://api.weatherapi.com/v1/current.json?key=1a4352a1880b4ad3a6d71833230802&q=Kolkata')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.current?.temp_c) {
-          setWeather({
-            temp: `${data.current.temp_c.toFixed(1)}°C`,
-            location: 'Salt Lake, Kolkata',
-          });
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const quickServices = config.quickServices?.length ? config.quickServices : FALLBACK_QUICK_SERVICES;
+  const partners = config.partners?.length
+    ? config.partners.map((partner) => ({ ...partner, source: { uri: partner.imageUrl } }))
+    : [
+        { id: 'police', linkUrl: config.socialLinks.facebook, source: require('@/assets/images/bidhannagar_police.jpg'), accessibilityLabel: 'Bidhannagar Police' },
+        { id: 'media', linkUrl: config.externalLinks.mediaPartner ?? 'https://www.wownews24x7.com/', source: require('@/assets/images/ad_logo.png'), accessibilityLabel: 'Media partner' },
+        { id: 'technology', linkUrl: config.externalLinks.technologyPartner ?? 'https://www.facebook.com/iemlabs', source: require('@/assets/images/iem_labs.jpg'), accessibilityLabel: 'Technology partner' },
+      ];
 
   const openUrl = (url: string) => {
     Linking.openURL(url).catch(() => {});
@@ -90,45 +82,28 @@ export default function HomeScreen() {
     return (
       <View style={styles.landingContainer}>
         <ImageBackground
-          source={require('@/assets/images/bg.jpg')}
+          source={config.media.welcomeBackgroundImageUrl ? { uri: config.media.welcomeBackgroundImageUrl } : require('@/assets/images/bg.jpg')}
           style={styles.landingBg}
           resizeMode="cover">
           <SafeAreaView style={styles.landingSafeArea} edges={['top', 'bottom']}>
             {/* Top Logo Badges & Audio Toggle */}
             <View style={styles.landingTopRow}>
               <View style={styles.badgesGroup}>
-                <Pressable
-                  onPress={() => openUrl('https://www.facebook.com/bdncitypolice')}
-                  style={styles.badgeCircle}>
-                  <Image
-                    source={require('@/assets/images/bidhannagar_police.jpg')}
-                    style={styles.badgeImg}
-                    contentFit="contain"
-                  />
-                </Pressable>
-                <Pressable
-                  onPress={() => openUrl('https://www.wownews24x7.com/')}
-                  style={styles.badgeCircle}>
-                  <Image
-                    source={require('@/assets/images/ad_logo.png')}
-                    style={styles.badgeImg}
-                    contentFit="contain"
-                  />
-                </Pressable>
-                <Pressable
-                  onPress={() => openUrl('https://www.facebook.com/iemlabs')}
-                  style={styles.badgeCircle}>
-                  <Image
-                    source={require('@/assets/images/iem_labs.jpg')}
-                    style={styles.badgeImg}
-                    contentFit="contain"
-                  />
-                </Pressable>
+                {partners.map((partner) => (
+                  <Pressable
+                    key={partner.id}
+                    accessibilityRole="link"
+                    accessibilityLabel={partner.accessibilityLabel}
+                    onPress={() => openUrl(partner.linkUrl)}
+                    style={styles.badgeCircle}>
+                    <Image source={partner.source} style={styles.badgeImg} contentFit="contain" />
+                  </Pressable>
+                ))}
               </View>
 
               {/* Floating Dhak audio toggle */}
               <View style={styles.audioWrapper}>
-                <AudioPlayerButton />
+                <AudioPlayerButton url={config.media.dhakAudioUrl} />
               </View>
             </View>
 
@@ -152,8 +127,7 @@ export default function HomeScreen() {
                   />
                 </View>
                 <Text style={styles.descText}>
-                  Durga Puja also known as Durgotsava or Sharodotsav, is an annual Hindu festival
-                  originating in the Indian subcontinent
+                  {getCopy(config, 'welcomeDescription', 'Durga Puja, also known as Durgotsava or Sharodotsav, is an annual Hindu festival originating in the Indian subcontinent.')}
                 </Text>
               </View>
 
@@ -162,7 +136,7 @@ export default function HomeScreen() {
                 <Pressable
                   onPress={() => setShowLanding(false)}
                   style={({ pressed }) => [styles.exploreBtn, pressed && styles.pressed]}>
-                  <Text style={styles.exploreBtnText}>Explore →</Text>
+                  <Text style={styles.exploreBtnText}>{getCopy(config, 'welcomeExplore', 'Explore →')}</Text>
                 </Pressable>
               </View>
             </View>
@@ -189,10 +163,10 @@ export default function HomeScreen() {
                 size={18}
                 tintColor="#FFA000"
               />
-              <Text style={styles.weatherTemp}>{weather.temp}</Text>
+               <Text style={styles.weatherTemp}>{config.weather?.temperature ?? '—'}</Text>
             </View>
             <Text style={styles.weatherLoc} numberOfLines={1}>
-              {weather.location}
+               {config.weather?.location ?? config.district}
             </Text>
           </View>
 
@@ -214,7 +188,7 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}>
           {/* Return to Welcome link */}
           <Pressable onPress={() => setShowLanding(true)} style={styles.backToWelcome}>
-            <Text style={styles.backToWelcomeText}>← Back to Welcome Art</Text>
+            <Text style={styles.backToWelcomeText}>{getCopy(config, 'homeBackToWelcome', '← Back to Welcome Art')}</Text>
           </Pressable>
 
           {/* 6 Quick Action Pills (2-Column Grid) */}
@@ -223,7 +197,7 @@ export default function HomeScreen() {
               onPress={() => dial(config.emergency.ambulancePhone ?? '102')}
               style={({ pressed }) => [styles.actionPill, pressed && styles.pressed]}>
               <FontAwesome6 name="truck-medical" size={16} color="#ffffff" />
-              <Text style={styles.actionPillText}>AMBULANCE</Text>
+              <Text style={styles.actionPillText}>{getCopy(config, 'homeAmbulance', 'AMBULANCE')}</Text>
             </Pressable>
 
             {guideMapUrls.length > 0 ? (
@@ -231,7 +205,7 @@ export default function HomeScreen() {
                 onPress={() => setShowPujaGuide(true)}
                 style={({ pressed }) => [styles.actionPill, pressed && styles.pressed]}>
                 <FontAwesome6 name="building-columns" size={16} color="#ffffff" />
-                <Text style={styles.actionPillText}>PUJA GUIDE</Text>
+                <Text style={styles.actionPillText}>{getCopy(config, 'homePujaGuide', 'PUJA GUIDE')}</Text>
               </Pressable>
             ) : null}
 
@@ -243,7 +217,7 @@ export default function HomeScreen() {
                 size={18}
                 tintColor="#ffffff"
               />
-              <Text style={styles.actionPillText}>POLICE HELP</Text>
+              <Text style={styles.actionPillText}>{getCopy(config, 'homePoliceHelp', 'POLICE HELP')}</Text>
             </Pressable>
 
             <Pressable
@@ -254,7 +228,7 @@ export default function HomeScreen() {
                 size={18}
                 tintColor="#ffffff"
               />
-              <Text style={styles.actionPillText}>FIRE HELP</Text>
+              <Text style={styles.actionPillText}>{getCopy(config, 'homeFireHelp', 'FIRE HELP')}</Text>
             </Pressable>
 
             <Pressable
@@ -265,7 +239,7 @@ export default function HomeScreen() {
                 size={18}
                 tintColor="#ffffff"
               />
-              <Text style={styles.actionPillText}>PARKING ZONE</Text>
+              <Text style={styles.actionPillText}>{getCopy(config, 'homeParkingZone', 'PARKING ZONE')}</Text>
             </Pressable>
 
             <Pressable
@@ -276,7 +250,7 @@ export default function HomeScreen() {
                 size={18}
                 tintColor="#ffffff"
               />
-              <Text style={styles.actionPillText}>BD VAN SUPPORT</Text>
+              <Text style={styles.actionPillText}>{getCopy(config, 'homeBdVanSupport', 'BD VAN SUPPORT')}</Text>
             </Pressable>
           </View>
 
@@ -294,9 +268,9 @@ export default function HomeScreen() {
                     size={18}
                     tintColor="#ffffff"
                   />
-                  <Text style={styles.quizTitle}>TECH CYBER QUIZ</Text>
+                  <Text style={styles.quizTitle}>{getCopy(config, 'homeQuizTitle', 'TECH CYBER QUIZ')}</Text>
                 </View>
-                <Text style={styles.quizSub}>🎁 Win Exciting Prizes! Play and Win! 🎁</Text>
+                <Text style={styles.quizSub}>{getCopy(config, 'homeQuizSubtitle', '🎁 Win Exciting Prizes! Play and Win! 🎁')}</Text>
               </LinearGradient>
             )}
           </Pressable>
@@ -305,23 +279,23 @@ export default function HomeScreen() {
           <Pressable
             onPress={() => router.push('/emergency')}
             style={({ pressed }) => [styles.emergencyBtn, pressed && styles.pressed]}>
-            <Text style={styles.emergencyBtnText}>✱ EMERGENCY</Text>
+            <Text style={styles.emergencyBtnText}>{getCopy(config, 'homeEmergency', '✱ EMERGENCY')}</Text>
           </Pressable>
 
           {/* QUICK ACCESS Section */}
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>⚡ QUICK ACCESS</Text>
+            <Text style={styles.sectionTitle}>{getCopy(config, 'homeQuickAccess', '⚡ QUICK ACCESS')}</Text>
           </View>
 
           {/* Horizontal Quick Access Rail */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quickRail}>
-            {QUICK_SERVICES.map((item) => (
+            {quickServices.map((item) => (
               <Pressable
                 key={item.label}
                 onPress={() => openUrl(`https://www.google.com/maps/search/${item.query}`)}
                 style={styles.quickItem}>
                 <View style={[styles.quickIconCircle, { backgroundColor: `${item.color}15` }]}>
-                  <FontAwesome6 name={item.faIcon} size={20} color={item.color} />
+                  <FontAwesome6 name={item.icon as ComponentProps<typeof FontAwesome6>['name']} size={20} color={item.color} />
                 </View>
                 <Text style={styles.quickLabel}>{item.label}</Text>
               </Pressable>
@@ -331,7 +305,11 @@ export default function HomeScreen() {
           {/* Backend-managed promo video */}
           {config.features.promoVideo && config.media.promoVideoUrl ? (
             <View style={styles.videoSection}>
-              <VideoPromoPlayer url={config.media.promoVideoUrl} />
+              <VideoPromoPlayer
+                url={config.media.promoVideoUrl}
+                label={getCopy(config, 'promoVideoAccessibility', `${config.policeName} promotional video`)}
+                fallbackLabel={getCopy(config, 'promoVideoFallback', 'Watch on YouTube')}
+              />
             </View>
           ) : null}
 
@@ -342,7 +320,7 @@ export default function HomeScreen() {
 
           {/* Explore Nearby Filter Section */}
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>🔍 Explore Nearby</Text>
+            <Text style={styles.sectionTitle}>{getCopy(config, 'homeExploreNearby', '🔍 Explore Nearby')}</Text>
           </View>
 
           {/* Distance Chips */}
@@ -373,14 +351,14 @@ export default function HomeScreen() {
           {/* Feature Card 1: Nearby Durga Puja */}
           <View style={styles.featureCard}>
             <Image
-              source={require('@/assets/images/durga-bg-card.jpg')}
+              source={config.media.pandalFallbackImageUrl ?? require('@/assets/images/durga-bg-card.jpg')}
               style={styles.featureCardImg}
               contentFit="cover"
             />
             <View style={styles.featureCardContent}>
-              <Text style={styles.featureCardTitle}>Nearby Durga Puja</Text>
+              <Text style={styles.featureCardTitle}>{getCopy(config, 'homeNearbyPujaTitle', 'Nearby Durga Puja')}</Text>
               <Text style={styles.featureCardSub}>
-                Find nearby Durga Puja pandals in your area.
+                {getCopy(config, 'homeNearbyPujaSubtitle', 'Find nearby Durga Puja pandals in your area.')}
               </Text>
               <Pressable
                 onPress={() =>
@@ -390,7 +368,7 @@ export default function HomeScreen() {
                   })
                 }
                 style={({ pressed }) => [styles.cardExploreBtn, pressed && styles.pressed]}>
-                <Text style={styles.cardExploreBtnText}>EXPLORE →</Text>
+                <Text style={styles.cardExploreBtnText}>{getCopy(config, 'exploreAction', 'EXPLORE →')}</Text>
               </Pressable>
             </View>
           </View>
@@ -398,14 +376,14 @@ export default function HomeScreen() {
           {/* Feature Card 2: Nearby Hospitals */}
           <View style={styles.featureCard}>
             <Image
-              source={require('@/assets/images/hospital-bg-card.jpg')}
+              source={config.media.hospitalFallbackImageUrl ?? require('@/assets/images/hospital-bg-card.jpg')}
               style={styles.featureCardImg}
               contentFit="cover"
             />
             <View style={styles.featureCardContent}>
-              <Text style={styles.featureCardTitle}>Nearby Hospitals</Text>
+              <Text style={styles.featureCardTitle}>{getCopy(config, 'homeNearbyHospitalsTitle', 'Nearby Hospitals')}</Text>
               <Text style={styles.featureCardSub}>
-                Find nearby hospitals & emergency clinics in your area.
+                {getCopy(config, 'homeNearbyHospitalsSubtitle', 'Find nearby hospitals & emergency clinics in your area.')}
               </Text>
               <Pressable
                 onPress={() =>
@@ -415,7 +393,7 @@ export default function HomeScreen() {
                   })
                 }
                 style={({ pressed }) => [styles.cardExploreBtn, pressed && styles.pressed]}>
-                <Text style={styles.cardExploreBtnText}>EXPLORE →</Text>
+                <Text style={styles.cardExploreBtnText}>{getCopy(config, 'exploreAction', 'EXPLORE →')}</Text>
               </Pressable>
             </View>
           </View>
@@ -423,7 +401,7 @@ export default function HomeScreen() {
           {/* Sponsor Ad Banner 2 */}
           <View style={styles.adBannerCard}>
             <Image
-              source={require('@/assets/images/ads/ad_1.jpg')}
+              source={config.media.sponsorBannerImageUrl ?? require('@/assets/images/ads/ad_1.jpg')}
               style={styles.adBannerImg}
               contentFit="cover"
             />
@@ -432,13 +410,13 @@ export default function HomeScreen() {
           {/* Feature Card 3: Nearby Pharmacy */}
           <View style={styles.featureCard}>
             <Image
-              source={require('@/assets/images/pharmacy-bg-card.jpg')}
+              source={config.media.pharmacyFallbackImageUrl ?? require('@/assets/images/pharmacy-bg-card.jpg')}
               style={styles.featureCardImg}
               contentFit="cover"
             />
             <View style={styles.featureCardContent}>
-              <Text style={styles.featureCardTitle}>Nearby Pharmacy</Text>
-              <Text style={styles.featureCardSub}>Find 24/7 pharmacies in your area.</Text>
+              <Text style={styles.featureCardTitle}>{getCopy(config, 'homeNearbyPharmacyTitle', 'Nearby Pharmacy')}</Text>
+              <Text style={styles.featureCardSub}>{getCopy(config, 'homeNearbyPharmacySubtitle', 'Find 24/7 pharmacies in your area.')}</Text>
               <Pressable
                 onPress={() =>
                   router.push({
@@ -447,7 +425,7 @@ export default function HomeScreen() {
                   })
                 }
                 style={({ pressed }) => [styles.cardExploreBtn, pressed && styles.pressed]}>
-                <Text style={styles.cardExploreBtnText}>EXPLORE →</Text>
+                <Text style={styles.cardExploreBtnText}>{getCopy(config, 'exploreAction', 'EXPLORE →')}</Text>
               </Pressable>
             </View>
           </View>
@@ -455,19 +433,19 @@ export default function HomeScreen() {
           {/* Feature Card 4: Nearby Police Station */}
           <View style={styles.featureCard}>
             <Image
-              source={require('@/assets/images/police-bg-card.jpg')}
+              source={config.media.policeFallbackImageUrl ?? require('@/assets/images/police-bg-card.jpg')}
               style={styles.featureCardImg}
               contentFit="cover"
             />
             <View style={styles.featureCardContent}>
-              <Text style={styles.featureCardTitle}>Nearby Police Stations</Text>
+              <Text style={styles.featureCardTitle}>{getCopy(config, 'homeNearbyPoliceTitle', 'Nearby Police Stations')}</Text>
               <Text style={styles.featureCardSub}>
-                Find police stations & assistance booths across Bidhannagar.
+                {getCopy(config, 'homeNearbyPoliceSubtitle', `Find police stations & assistance booths across ${config.district}.`)}
               </Text>
               <Pressable
                 onPress={() => router.push('/emergency')}
                 style={({ pressed }) => [styles.cardExploreBtn, pressed && styles.pressed]}>
-                <Text style={styles.cardExploreBtnText}>EXPLORE →</Text>
+                <Text style={styles.cardExploreBtnText}>{getCopy(config, 'exploreAction', 'EXPLORE →')}</Text>
               </Pressable>
             </View>
           </View>
@@ -475,11 +453,11 @@ export default function HomeScreen() {
           {/* Footer Art & Developer Credits */}
           <View style={styles.footerSection}>
             <Image
-              source={require('@/assets/images/bg_down.jpg')}
+              source={config.media.footerImageUrl ?? require('@/assets/images/bg_down.jpg')}
               style={styles.footerArt}
               contentFit="contain"
             />
-            <Text style={styles.footerCredit}>Developed with ❤ for BDNPC</Text>
+            <Text style={styles.footerCredit}>{getCopy(config, 'footerCredit', 'Developed with ❤ for BDNPC')}</Text>
           </View>
         </ScrollView>
 
@@ -491,7 +469,7 @@ export default function HomeScreen() {
             onPress={() => setShowFeedback(true)}
             style={({ pressed }) => [styles.floatingFeedback, pressed && styles.pressed]}>
             <Image
-              source={require('@/assets/images/feedback.gif')}
+              source={config.media.feedbackImageUrl ?? require('@/assets/images/feedback.gif')}
               style={styles.feedbackImg}
               contentFit="cover"
             />
@@ -504,7 +482,7 @@ export default function HomeScreen() {
           <Pressable
             onPress={() => setShowSos(true)}
             style={({ pressed }) => [styles.floatingSos, pressed && styles.pressed]}>
-            <Text style={styles.sosText}>SOS</Text>
+            <Text style={styles.sosText}>{getCopy(config, 'sosAction', 'SOS')}</Text>
           </Pressable>
         </View>
 
@@ -516,7 +494,12 @@ export default function HomeScreen() {
             onClose={() => setShowPujaGuide(false)}
           />
         ) : null}
-        <FeedbackModal visible={showFeedback} onClose={() => setShowFeedback(false)} />
+        <FeedbackModal
+          visible={showFeedback}
+          endpoint={config.externalLinks.feedbackEndpoint}
+          policeName={config.policeName}
+          onClose={() => setShowFeedback(false)}
+        />
         <SosModal
           visible={showSos}
           phone={config.emergency.phone}

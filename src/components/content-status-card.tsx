@@ -3,13 +3,13 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { useAppContent } from '@/content/app-content';
+import { getCopy, useAppContent } from '@/content/app-content';
 import { Spacing } from '@/constants/theme';
 
 const SOURCE_DETAILS = {
-  remote: { label: 'Live server', color: '#18794E', backgroundColor: '#E9F7EF' },
-  cached: { label: 'Saved server data', color: '#8A5700', backgroundColor: '#FFF4D6' },
-  bundled: { label: 'Built-in data', color: '#60646C', backgroundColor: '#EEF1F5' },
+  remote: { labelKey: 'sourceRemote', fallback: 'Live server', color: '#18794E', backgroundColor: '#E9F7EF' },
+  cached: { labelKey: 'sourceCached', fallback: 'Saved server data', color: '#8A5700', backgroundColor: '#FFF4D6' },
+  bundled: { labelKey: 'sourceBundled', fallback: 'Built-in data', color: '#60646C', backgroundColor: '#EEF1F5' },
 } as const;
 
 function formatUpdatedAt(value: string) {
@@ -27,36 +27,40 @@ export function ContentStatusCard() {
     setIsRefreshing(true);
     setMessage(null);
     const succeeded = await refresh();
-    setMessage(succeeded ? 'Latest server data loaded.' : 'Server unavailable. Existing data is still available.');
+    setMessage(
+      succeeded
+        ? getCopy(content.config, 'refreshSuccess', 'Latest server data loaded.')
+        : getCopy(content.config, 'refreshFailure', 'Server unavailable. Existing data is still available.')
+    );
     setIsRefreshing(false);
   };
 
   return (
     <ThemedView style={styles.card}>
       <View style={styles.headingRow}>
-        <ThemedText type="smallBold">App data</ThemedText>
+        <ThemedText type="smallBold">{getCopy(content.config, 'appDataTitle', 'App data')}</ThemedText>
         <View style={[styles.statusBadge, { backgroundColor: sourceDetails.backgroundColor }]}>
           <View style={[styles.statusDot, { backgroundColor: sourceDetails.color }]} />
           <ThemedText type="smallBold" style={{ color: sourceDetails.color }}>
-            {sourceDetails.label}
+            {getCopy(content.config, sourceDetails.labelKey, sourceDetails.fallback)}
           </ThemedText>
         </View>
       </View>
 
       <View style={styles.details}>
         <ThemedText type="small" themeColor="textSecondary">
-          Content version
+          {getCopy(content.config, 'contentVersionLabel', 'Content version')}
         </ThemedText>
         <ThemedText type="smallBold">{content.contentVersion}</ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
-          Last updated
+          {getCopy(content.config, 'lastUpdatedLabel', 'Last updated')}
         </ThemedText>
         <ThemedText type="smallBold">{formatUpdatedAt(content.updatedAt)}</ThemedText>
       </View>
 
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Refresh app data from the server"
+        accessibilityLabel={getCopy(content.config, 'refreshAccessibilityLabel', 'Refresh app data from the server')}
         disabled={isRefreshing}
         onPress={handleRefresh}
         style={({ pressed }) => [
@@ -66,7 +70,9 @@ export function ContentStatusCard() {
         ]}>
         {isRefreshing ? <ActivityIndicator color="#FFFFFF" size="small" /> : null}
         <ThemedText type="smallBold" style={styles.refreshButtonText}>
-          {isRefreshing ? 'Checking server…' : 'Refresh data'}
+          {isRefreshing
+            ? getCopy(content.config, 'checkingServerLabel', 'Checking server…')
+            : getCopy(content.config, 'refreshDataLabel', 'Refresh data')}
         </ThemedText>
       </Pressable>
 

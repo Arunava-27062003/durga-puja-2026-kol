@@ -3,6 +3,8 @@ import { Alert, Linking, Modal, Pressable, StyleSheet, Text, View } from 'react-
 import * as Location from 'expo-location';
 import { SymbolView } from 'expo-symbols';
 
+import { getCopy, useAppContent } from '@/content/app-content';
+
 type Props = {
   visible: boolean;
   phone: string;
@@ -12,6 +14,7 @@ type Props = {
 
 export function SosModal({ visible, phone, whatsapp, onClose }: Props) {
   const [sendingLocation, setSendingLocation] = useState(false);
+  const { content } = useAppContent();
 
   const handleCall = () => {
     onClose();
@@ -20,13 +23,13 @@ export function SosModal({ visible, phone, whatsapp, onClose }: Props) {
 
   const handleWhatsApp = async () => {
     setSendingLocation(true);
-    let message = 'Hello, I need assistance.';
+    let message = getCopy(content.config, 'whatsappHelpMessage', 'Hello, I need assistance.');
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status === 'granted') {
         const position = await Location.getCurrentPositionAsync({});
         const { latitude, longitude } = position.coords;
-        message = `Hello, I need assistance. Here is my location: https://maps.google.com/?q=${latitude},${longitude}`;
+        message = `${getCopy(content.config, 'whatsappLocationMessage', 'Hello, I need assistance. Here is my location:')} https://maps.google.com/?q=${latitude},${longitude}`;
       }
     } catch {
       // Fall back to sending without a location.
@@ -36,7 +39,10 @@ export function SosModal({ visible, phone, whatsapp, onClose }: Props) {
     Linking.openURL(
       `https://wa.me/${whatsapp ?? phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`
     ).catch(() => {
-      Alert.alert('WhatsApp not available', 'Could not open WhatsApp on this device.');
+      Alert.alert(
+        getCopy(content.config, 'whatsappUnavailableTitle', 'WhatsApp not available'),
+        getCopy(content.config, 'whatsappUnavailableBody', 'Could not open WhatsApp on this device.')
+      );
     });
   };
 
@@ -45,7 +51,7 @@ export function SosModal({ visible, phone, whatsapp, onClose }: Props) {
       <Pressable style={styles.overlay} onPress={onClose}>
         <Pressable style={styles.sheet} onPress={() => {}}>
           <View style={styles.handle} />
-          <Text style={styles.title}>Need Help?</Text>
+          <Text style={styles.title}>{getCopy(content.config, 'sosTitle', 'Need Help?')}</Text>
 
           <View style={styles.tileRow}>
             <Pressable
@@ -58,7 +64,9 @@ export function SosModal({ visible, phone, whatsapp, onClose }: Props) {
                 tintColor="#25D366"
               />
               <Text style={styles.tileLabel}>
-                {sendingLocation ? 'Locating…' : 'WhatsApp'}
+                {sendingLocation
+                  ? getCopy(content.config, 'locatingLabel', 'Locating…')
+                  : getCopy(content.config, 'whatsappLabel', 'WhatsApp')}
               </Text>
             </Pressable>
 
@@ -70,7 +78,7 @@ export function SosModal({ visible, phone, whatsapp, onClose }: Props) {
                 size={30}
                 tintColor="#1976D2"
               />
-              <Text style={styles.tileLabel}>Call</Text>
+              <Text style={styles.tileLabel}>{getCopy(content.config, 'callLabel', 'Call')}</Text>
             </Pressable>
           </View>
         </Pressable>

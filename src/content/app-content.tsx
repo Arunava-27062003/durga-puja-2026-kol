@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, type PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { AppState } from 'react-native';
 
 import bundledContacts from '@/data/emergency-contacts.json';
 import bundledPlaces from '@/data/nearby-places.json';
@@ -62,6 +63,23 @@ export type AppConfig = {
   announcements: string[];
   socialLinks: Record<string, string>;
   externalLinks: Record<string, string>;
+  copy?: Record<string, string>;
+  about?: {
+    festivalTitle: string;
+    festivalBody: string;
+    appTitle: string;
+    appBody: string;
+    organizerTitle: string;
+    organizerName: string;
+  };
+  weather?: { temperature: string; location: string };
+  partners?: { id: string; imageUrl: string; linkUrl: string; accessibilityLabel?: string }[];
+  quickServices?: {
+    label: string;
+    query: string;
+    icon: string;
+    color: string;
+  }[];
   media: {
     pandalFallbackImageUrl?: string;
     parkingFallbackImageUrl?: string;
@@ -69,6 +87,15 @@ export type AppConfig = {
     guideMapImageUrls?: string[];
     guideMapAspectRatio?: number;
     promoVideoUrl?: string;
+    welcomeBackgroundImageUrl?: string;
+    policeLogoImageUrl?: string;
+    dhakAudioUrl?: string;
+    hospitalFallbackImageUrl?: string;
+    pharmacyFallbackImageUrl?: string;
+    policeFallbackImageUrl?: string;
+    sponsorBannerImageUrl?: string;
+    footerImageUrl?: string;
+    feedbackImageUrl?: string;
   };
   features: Record<string, boolean>;
 };
@@ -116,6 +143,8 @@ const fallbackConfig: AppConfig = {
     cyberQuiz: 'https://forms.gle/N7m5F7L1wqhArheb6',
     parkingZones: 'https://www.bidhannagarpolice.in/parkingzones',
   },
+  copy: {},
+  weather: { temperature: '—', location: 'Salt Lake, Kolkata' },
   media: {},
   features: { pandals: true, nearby: true, emergency: true, guideMap: true, promoVideo: true },
 };
@@ -152,6 +181,28 @@ function isAppContent(value: unknown): value is AppContent {
   );
 }
 
+function normalizeContent(content: AppContent): AppContent {
+  const remoteConfig = content.config ?? fallbackConfig;
+  return {
+    ...content,
+    config: {
+      ...fallbackConfig,
+      ...remoteConfig,
+      home: { ...fallbackConfig.home, ...remoteConfig.home },
+      emergency: { ...fallbackConfig.emergency, ...remoteConfig.emergency },
+      socialLinks: { ...fallbackConfig.socialLinks, ...remoteConfig.socialLinks },
+      externalLinks: { ...fallbackConfig.externalLinks, ...remoteConfig.externalLinks },
+      media: { ...fallbackConfig.media, ...remoteConfig.media },
+      features: { ...fallbackConfig.features, ...remoteConfig.features },
+      copy: { ...fallbackConfig.copy, ...remoteConfig.copy },
+      weather: {
+        temperature: remoteConfig.weather?.temperature ?? fallbackConfig.weather?.temperature ?? '—',
+        location: remoteConfig.weather?.location ?? fallbackConfig.weather?.location ?? 'Salt Lake, Kolkata',
+      },
+    },
+  };
+}
+
 async function fetchContent() {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -164,7 +215,7 @@ async function fetchContent() {
     if (!response.ok) throw new Error(`Content request failed with ${response.status}`);
     const payload: unknown = await response.json();
     if (!isAppContent(payload)) throw new Error('Content response has an unsupported shape');
-    return payload;
+    return normalizeContent(payload);
   } finally {
     clearTimeout(timeout);
   }
@@ -196,7 +247,7 @@ export function AppContentProvider({ children }: PropsWithChildren) {
         if (cached) {
           const parsed: unknown = JSON.parse(cached);
           if (!cancelled && isAppContent(parsed)) {
-            setContent(parsed);
+            setContent(normalizeContent(parsed));
             setSource('cached');
           }
         }
@@ -213,8 +264,20 @@ export function AppContentProvider({ children }: PropsWithChildren) {
     };
   }, [refresh]);
 
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void refresh();
+    });
+    return () => subscription.remove();
+  }, [refresh]);
+
   const value = useMemo(() => ({ content, source, refresh }), [content, refresh, source]);
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
+}
+
+export function getCopy(config: AppConfig, key: string, fallback: string) {
+  const value = config.copy?.[key];
+  return typeof value === 'string' && value.trim() ? value : fallback;
 }
 
 export function useAppContent() {

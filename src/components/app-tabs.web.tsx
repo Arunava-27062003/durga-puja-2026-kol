@@ -13,26 +13,31 @@ import { ExternalLink } from './external-link';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
-import { useAppContent } from '@/content/app-content';
+import { getCopy, useAppContent } from '@/content/app-content';
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 
 export default function AppTabs() {
+  const { content } = useAppContent();
+  const { config } = content;
   return (
     <Tabs>
       <TabSlot style={{ height: '100%' }} />
       <TabList asChild>
         <CustomTabList>
           <TabTrigger name="home" href="/" asChild>
-            <TabButton>Home</TabButton>
+            <TabButton>{getCopy(config, 'tabHome', 'Home')}</TabButton>
           </TabTrigger>
           <TabTrigger name="pandals" href="/pandals/index" asChild>
-            <TabButton>Pandals</TabButton>
+            <TabButton>{getCopy(config, 'tabPandals', 'Pandals')}</TabButton>
+          </TabTrigger>
+          <TabTrigger name="nearby" href="/nearby" asChild>
+            <TabButton>{getCopy(config, 'tabNearby', 'Nearby')}</TabButton>
           </TabTrigger>
           <TabTrigger name="emergency" href="/emergency" asChild>
-            <TabButton>Emergency</TabButton>
+            <TabButton>{getCopy(config, 'tabEmergency', 'Emergency')}</TabButton>
           </TabTrigger>
           <TabTrigger name="about" href="/about" asChild>
-            <TabButton>About</TabButton>
+            <TabButton>{getCopy(config, 'tabAbout', 'About')}</TabButton>
           </TabTrigger>
         </CustomTabList>
       </TabList>

@@ -7,7 +7,7 @@ import { DistanceFilter } from '@/components/distance-filter';
 import { PlaceCard } from '@/components/place-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { useAppContent } from '@/content/app-content';
+import { getCopy, useAppContent } from '@/content/app-content';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useLocation } from '@/hooks/use-location';
 import { getDistanceKm } from '@/utils/distance';
@@ -57,17 +57,17 @@ export default function PandalsScreen() {
           ListHeaderComponent={
             <>
               <ThemedText type="title" style={styles.title}>
-                Pandals
+                {getCopy(config, 'pandalsTitle', 'Pandals')}
               </ThemedText>
               {location.status === 'denied' && (
                 <ThemedText type="small" themeColor="textSecondary" style={styles.hint}>
-                  Enable location to see pandals sorted by distance.
+                  {getCopy(config, 'pandalsLocationDenied', 'Enable location to see pandals sorted by distance.')}
                 </ThemedText>
               )}
               <DistanceFilter value={radiusKm} onChange={setRadiusKm} />
               {sorted.length === 0 && (
                 <ThemedText type="small" themeColor="textSecondary" style={styles.hint}>
-                  No pandals within {radiusKm} KM. Try a wider radius.
+                  {getCopy(config, 'pandalsEmpty', `No pandals within ${radiusKm} KM. Try a wider radius.`)}
                 </ThemedText>
               )}
             </>
@@ -81,6 +81,7 @@ export default function PandalsScreen() {
               lng={item.lng}
               kind="pandal"
               thumbnailSource={item.imageUrl ?? config.media.pandalFallbackImageUrl}
+              directionsLabel={getCopy(config, 'directionsAction', 'Get Directions')}
               onPress={() => router.push({ pathname: '/pandals/[id]', params: { id: item.id } })}
             />
           )}

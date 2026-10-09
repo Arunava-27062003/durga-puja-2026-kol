@@ -7,10 +7,11 @@ const DHAK_AUDIO_URL = 'https://audio.jukehost.co.uk/WzXqmwO3FQyAZ8Fm5S92RkyPDiS
 
 type Props = {
   style?: object;
+  url?: string;
 };
 
-export function AudioPlayerButton({ style }: Props) {
-  const player = useAudioPlayer({ uri: DHAK_AUDIO_URL });
+export function AudioPlayerButton({ style, url = DHAK_AUDIO_URL }: Props) {
+  const player = useAudioPlayer({ uri: url });
   const status = useAudioPlayerStatus(player);
   const hasAutoPlayed = useRef(false);
 

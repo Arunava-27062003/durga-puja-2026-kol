@@ -18,7 +18,7 @@ export function CallButton({ phone, label = 'Call', style }: Props) {
       disabled={disabled}
       onPress={() => Linking.openURL(`tel:${phone}`)}
       style={[styles.button, disabled && styles.disabled, style]}>
-      <ThemedText type="smallBold" style={styles.text}>
+      <ThemedText type="smallBold" style={styles.text} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.8}>
         {disabled ? 'Unavailable' : label}
       </ThemedText>
     </Pressable>
@@ -38,5 +38,6 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#ffffff',
+    textAlign: 'center',
   },
 });

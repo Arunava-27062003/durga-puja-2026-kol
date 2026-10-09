@@ -7,7 +7,7 @@ import { DistanceFilter } from '@/components/distance-filter';
 import { PlaceCard } from '@/components/place-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { useAppContent } from '@/content/app-content';
+import { getCopy, useAppContent } from '@/content/app-content';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useLocation } from '@/hooks/use-location';
 import { getDistanceKm } from '@/utils/distance';
@@ -62,11 +62,11 @@ export default function NearbyScreen() {
           ListHeaderComponent={
             <>
               <ThemedText type="title" style={styles.title}>
-                Nearby
+                {getCopy(config, 'nearbyTitle', 'Nearby')}
               </ThemedText>
               {location.status === 'denied' && (
                 <ThemedText type="small" themeColor="textSecondary" style={styles.hint}>
-                  Enable location to see places sorted by distance.
+                  {getCopy(config, 'nearbyLocationDenied', 'Enable location to see places sorted by distance.')}
                 </ThemedText>
               )}
               <ThemedView style={styles.filterRow}>
@@ -82,7 +82,7 @@ export default function NearbyScreen() {
               <DistanceFilter value={radiusKm} onChange={setRadiusKm} />
               {sorted.length === 0 && (
                 <ThemedText type="small" themeColor="textSecondary" style={styles.hint}>
-                  No places within {radiusKm} KM. Try a wider radius.
+                  {getCopy(config, 'nearbyEmpty', `No places within ${radiusKm} KM. Try a wider radius.`)}
                 </ThemedText>
               )}
             </>
@@ -95,7 +95,17 @@ export default function NearbyScreen() {
               lat={item.lat}
               lng={item.lng}
               kind="nearby"
-              thumbnailSource={item.imageUrl ?? config.media.parkingFallbackImageUrl}
+              thumbnailSource={
+                item.imageUrl ??
+                (item.category === 'hospital'
+                  ? config.media.hospitalFallbackImageUrl
+                  : item.category === 'pharmacy'
+                    ? config.media.pharmacyFallbackImageUrl
+                    : item.category === 'police'
+                      ? config.media.policeFallbackImageUrl
+                      : config.media.parkingFallbackImageUrl)
+              }
+              directionsLabel={getCopy(config, 'directionsAction', 'Get Directions')}
             />
           )}
         />

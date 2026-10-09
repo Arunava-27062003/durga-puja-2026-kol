@@ -11,6 +11,8 @@ import {
 import { Image } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
 
+import { getCopy, useAppContent } from '@/content/app-content';
+
 type Props = {
   visible: boolean;
   imageUrls: string[];
@@ -18,6 +20,7 @@ type Props = {
 };
 
 export function PujaGuideModal({ visible, imageUrls, onClose }: Props) {
+  const { content } = useAppContent();
   const [selectedPage, setSelectedPage] = useState(0);
   const screenWidth = Dimensions.get('window').width;
   if (imageUrls.length === 0) return null;
@@ -28,7 +31,7 @@ export function PujaGuideModal({ visible, imageUrls, onClose }: Props) {
     <Modal visible={visible} animationType="slide" transparent={false} onRequestClose={onClose}>
       <View style={styles.container}>
         <View style={styles.topBar}>
-          <Text style={styles.headerTitle}>Official Puja Guide</Text>
+          <Text style={styles.headerTitle}>{getCopy(content.config, 'guideTitle', 'Official Puja Guide')}</Text>
           <Pressable onPress={onClose} hitSlop={12} style={styles.closeBtn}>
             <SymbolView
               name={{ ios: 'xmark.circle.fill', android: 'close', web: 'close' }}
@@ -46,7 +49,7 @@ export function PujaGuideModal({ visible, imageUrls, onClose }: Props) {
               onPress={() => setSelectedPage(index)}
               style={[styles.tab, activePage === index && styles.activeTab]}>
               <Text style={[styles.tabText, activePage === index && styles.activeTabText]}>
-                Guide Map {index + 1}
+                {getCopy(content.config, 'guidePageLabel', 'Guide Map')} {index + 1}
               </Text>
             </Pressable>
           ))}
