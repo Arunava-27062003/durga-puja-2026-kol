@@ -14,11 +14,14 @@ import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
 import { getCopy, useAppContent } from '@/content/app-content';
-import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function AppTabs() {
   const { content } = useAppContent();
   const { config } = content;
+  const configuredSettingsLabel = getCopy(config, 'tabAbout', 'Settings');
+  const settingsLabel = configuredSettingsLabel === 'About' ? 'Settings' : configuredSettingsLabel;
   return (
     <Tabs>
       <TabSlot style={{ height: '100%' }} />
@@ -37,7 +40,7 @@ export default function AppTabs() {
             <TabButton>{getCopy(config, 'tabEmergency', 'Emergency')}</TabButton>
           </TabTrigger>
           <TabTrigger name="about" href="/about" asChild>
-            <TabButton>{getCopy(config, 'tabAbout', 'About')}</TabButton>
+            <TabButton>{settingsLabel}</TabButton>
           </TabTrigger>
         </CustomTabList>
       </TabList>
@@ -62,7 +65,7 @@ export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps
 export function CustomTabList(props: TabListProps) {
   const { content } = useAppContent();
   const { config } = content;
-  const colors = Colors.light;
+  const colors = useTheme();
 
   return (
     <View {...props} style={styles.tabListContainer}>

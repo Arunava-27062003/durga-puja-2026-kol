@@ -4,7 +4,9 @@ import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-g
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { SymbolView } from 'expo-symbols';
 
+import { Radius } from '@/constants/theme';
 import { getCopy, useAppContent } from '@/content/app-content';
+import { useTheme } from '@/hooks/use-theme';
 
 const MIN_SCALE = 1;
 const MAX_SCALE = 5;
@@ -134,6 +136,7 @@ function ZoomableGuidePage({ imageUrl, aspectRatio, width }: ZoomableGuidePagePr
 
 export function PujaGuideModal({ visible, imageUrls, imageAspectRatios = [], pageLabels = [], onClose }: Props) {
   const { content } = useAppContent();
+  const colors = useTheme();
   const [selectedPage, setSelectedPage] = useState(0);
   const { width } = useWindowDimensions();
   if (imageUrls.length === 0) return null;
@@ -144,25 +147,34 @@ export function PujaGuideModal({ visible, imageUrls, imageAspectRatios = [], pag
 
   return (
     <Modal visible={visible} animationType="slide" transparent={false} onRequestClose={onClose}>
-      <GestureHandlerRootView style={styles.container}>
-        <View style={styles.topBar}>
-          <Text style={styles.headerTitle}>{getCopy(content.config, 'guideTitle', 'Official Puja Guide')}</Text>
+      <GestureHandlerRootView style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.topBar, { backgroundColor: colors.navBackground, borderBottomColor: colors.border }]}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>{getCopy(content.config, 'guideTitle', 'Official Puja Guide')}</Text>
           <Pressable accessibilityLabel="Close guide" onPress={onClose} hitSlop={12} style={styles.closeButton}>
             <SymbolView
               name={{ ios: 'xmark.circle.fill', android: 'close', web: 'close' }}
               size={24}
-              tintColor="#424242"
+              tintColor={colors.accent}
             />
           </Pressable>
         </View>
 
-        <View style={styles.tabRow}>
+        <View style={[styles.tabRow, { backgroundColor: colors.surface }]}>
           {imageUrls.map((imageUrl, index) => (
             <Pressable
               key={imageUrl}
               onPress={() => setSelectedPage(index)}
-              style={[styles.tab, activePage === index && styles.activeTab]}>
-              <Text style={[styles.tabText, activePage === index && styles.activeTabText]} numberOfLines={2}>
+              style={[
+                styles.tab,
+                { backgroundColor: colors.input },
+                activePage === index && { backgroundColor: colors.accent },
+              ]}>
+              <Text
+                style={[
+                  styles.tabText,
+                  { color: activePage === index ? colors.inverseText : colors.textSecondary },
+                ]}
+                numberOfLines={2}>
                 {pageLabel(index)}
               </Text>
             </Pressable>
@@ -181,7 +193,7 @@ export function PujaGuideModal({ visible, imageUrls, imageAspectRatios = [], pag
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  container: { flex: 1 },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -190,16 +202,14 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#EEEEEE',
   },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#212121' },
+  headerTitle: { fontSize: 18, fontWeight: '700' },
   closeButton: { padding: 4 },
   tabRow: {
     flexDirection: 'row',
     paddingHorizontal: 16,
     paddingVertical: 8,
     gap: 12,
-    backgroundColor: '#F7F7F9',
   },
   tab: {
     flex: 1,
@@ -208,12 +218,9 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
-    backgroundColor: '#EAEAEF',
+    borderRadius: Radius.small,
   },
-  activeTab: { backgroundColor: '#1E3A8A' },
-  tabText: { fontSize: 12, fontWeight: '600', color: '#616161', textAlign: 'center' },
-  activeTabText: { color: '#FFFFFF' },
+  tabText: { fontSize: 12, fontWeight: '600', textAlign: 'center' },
   viewer: { flex: 1, overflow: 'hidden', backgroundColor: '#111827' },
   gestureArea: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   image: { backgroundColor: '#FFFFFF' },

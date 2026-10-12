@@ -10,6 +10,9 @@ import {
 } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
+import { Brand } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+
 type Props = {
   visible: boolean;
   endpoint?: string;
@@ -18,6 +21,7 @@ type Props = {
 };
 
 export function FeedbackModal({ visible, endpoint, policeName = 'Bidhannagar Police', onClose }: Props) {
+  const colors = useTheme();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
@@ -62,15 +66,15 @@ export function FeedbackModal({ visible, endpoint, policeName = 'Bidhannagar Pol
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <View style={styles.modalCard}>
+        <View style={[styles.modalCard, { backgroundColor: colors.surface }]}>
           <View style={styles.header}>
-            <Text style={styles.title}>Send Feedback</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Send Feedback</Text>
             <Pressable onPress={onClose} hitSlop={12}>
-              <SymbolView name={{ ios: 'xmark.circle.fill', android: 'close', web: 'close' }} size={22} tintColor="#757575" />
+              <SymbolView name={{ ios: 'xmark.circle.fill', android: 'close', web: 'close' }} size={22} tintColor={colors.accent} />
             </Pressable>
           </View>
 
-          <Text style={styles.subtitle}>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             Help {policeName} improve your Durga Puja experience.
           </Text>
 
@@ -85,7 +89,7 @@ export function FeedbackModal({ visible, endpoint, policeName = 'Bidhannagar Pol
                     web: star <= rating ? 'star' : 'star_outline',
                   }}
                   size={28}
-                  tintColor={star <= rating ? '#FFB300' : '#BDBDBD'}
+                  tintColor={star <= rating ? Brand.saffron : colors.border}
                 />
               </Pressable>
             ))}
@@ -93,29 +97,29 @@ export function FeedbackModal({ visible, endpoint, policeName = 'Bidhannagar Pol
 
           <TextInput
             placeholder="Your Name (Optional)"
-            placeholderTextColor="#9E9E9E"
+            placeholderTextColor={colors.textSecondary}
             value={name}
             onChangeText={setName}
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.input, borderColor: colors.border, color: colors.text }]}
           />
 
           <TextInput
             placeholder="Phone Number (Optional)"
-            placeholderTextColor="#9E9E9E"
+            placeholderTextColor={colors.textSecondary}
             value={phone}
             onChangeText={setPhone}
             keyboardType="phone-pad"
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.input, borderColor: colors.border, color: colors.text }]}
           />
 
           <TextInput
             placeholder="Write your feedback or issue..."
-            placeholderTextColor="#9E9E9E"
+            placeholderTextColor={colors.textSecondary}
             value={message}
             onChangeText={setMessage}
             multiline
             numberOfLines={4}
-            style={[styles.input, styles.textArea]}
+            style={[styles.input, styles.textArea, { backgroundColor: colors.input, borderColor: colors.border, color: colors.text }]}
           />
 
           <Pressable
@@ -123,10 +127,11 @@ export function FeedbackModal({ visible, endpoint, policeName = 'Bidhannagar Pol
             disabled={submitted}
             style={({ pressed }) => [
               styles.submitBtn,
+              { backgroundColor: colors.accent },
               pressed && styles.submitPressed,
               submitted && styles.submitDone,
             ]}>
-            <Text style={styles.submitText}>
+            <Text style={[styles.submitText, { color: colors.inverseText }]}>
               {submitted ? 'Submitted ✓' : 'Submit Feedback'}
             </Text>
           </Pressable>
@@ -147,7 +152,7 @@ const styles = StyleSheet.create({
   modalCard: {
     width: '100%',
     maxWidth: 420,
-    backgroundColor: '#ffffff',
+    backgroundColor: Brand.saffronWash,
     borderRadius: 20,
     padding: 24,
     shadowColor: '#000',
@@ -165,11 +170,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1A1A1A',
+    color: Brand.navyDeep,
   },
   subtitle: {
     fontSize: 13,
-    color: '#616161',
+    color: Brand.muted,
     marginBottom: 16,
   },
   starRow: {
@@ -182,14 +187,14 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   input: {
-    backgroundColor: '#F5F5F7',
+    backgroundColor: Brand.surface,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: Brand.divider,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#212121',
+    color: Brand.navyDeep,
     marginBottom: 12,
   },
   textArea: {
@@ -197,7 +202,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   submitBtn: {
-    backgroundColor: '#3595FF',
+    backgroundColor: Brand.saffronDeep,
     paddingVertical: 13,
     borderRadius: 12,
     alignItems: 'center',

@@ -25,7 +25,9 @@ import { PujaGuideModal } from '@/components/puja-guide-modal';
 import { PulseRing } from '@/components/pulse-ring';
 import { SosModal } from '@/components/sos-modal';
 import { VideoPromoPlayer } from '@/components/video-promo-player';
+import { Brand, Radius } from '@/constants/theme';
 import { getCopy, useAppContent } from '@/content/app-content';
+import { useTheme } from '@/hooks/use-theme';
 
 const SOCIAL_META = {
   whatsapp: { bg: '#25D366', icon: 'whatsapp' },
@@ -48,6 +50,7 @@ const FALLBACK_QUICK_SERVICES = [
 export default function HomeScreen() {
   const { content } = useAppContent();
   const { config } = content;
+  const colors = useTheme();
   const [showLanding, setShowLanding] = useState(true);
   const [showPujaGuide, setShowPujaGuide] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -65,7 +68,6 @@ export default function HomeScreen() {
     ? config.partners.map((partner) => ({ ...partner, source: { uri: partner.imageUrl } }))
     : [
         { id: 'police', linkUrl: config.socialLinks.facebook, source: require('@/assets/images/bidhannagar_police.jpg'), accessibilityLabel: 'Bidhannagar Police' },
-        { id: 'media', linkUrl: config.externalLinks.mediaPartner ?? 'https://www.wownews24x7.com/', source: require('@/assets/images/ad_logo.png'), accessibilityLabel: 'Media partner' },
         { id: 'technology', linkUrl: config.externalLinks.technologyPartner ?? 'https://www.facebook.com/iemlabs', source: require('@/assets/images/iem_labs.jpg'), accessibilityLabel: 'Technology partner' },
       ];
 
@@ -148,24 +150,24 @@ export default function HomeScreen() {
 
   // 2. MAIN DASHBOARD SCREEN
   return (
-    <View style={styles.mainContainer}>
+    <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         {/* Top Header: Weather & Social Icons */}
         <LinearGradient
-          colors={['#FFE0B2', '#FFF8F3']}
+          colors={[colors.accentSoft, colors.background]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.headerBar}>
+          style={[styles.headerBar, { borderBottomColor: colors.border }]}>
           <View style={styles.weatherBox}>
             <View style={styles.weatherRow}>
               <SymbolView
                 name={{ ios: 'sun.max.fill', android: 'wb_sunny', web: 'wb_sunny' }}
                 size={18}
-                tintColor="#FFA000"
+                tintColor={Brand.saffron}
               />
-               <Text style={styles.weatherTemp}>{config.weather?.temperature ?? '—'}</Text>
+               <Text style={[styles.weatherTemp, { color: colors.text }]}>{config.weather?.temperature ?? '—'}</Text>
             </View>
-            <Text style={styles.weatherLoc} numberOfLines={1}>
+            <Text style={[styles.weatherLoc, { color: colors.textSecondary }]} numberOfLines={1}>
                {config.weather?.location ?? config.district}
             </Text>
           </View>
@@ -187,8 +189,10 @@ export default function HomeScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}>
           {/* Return to Welcome link */}
-          <Pressable onPress={() => setShowLanding(true)} style={styles.backToWelcome}>
-            <Text style={styles.backToWelcomeText}>{getCopy(config, 'homeBackToWelcome', '← Back to Welcome Art')}</Text>
+          <Pressable
+            onPress={() => setShowLanding(true)}
+            style={[styles.backToWelcome, { backgroundColor: colors.accentSoft }]}>
+            <Text style={[styles.backToWelcomeText, { color: colors.accent }]}>{getCopy(config, 'homeBackToWelcome', '← Back to Welcome Art')}</Text>
           </Pressable>
 
           {/* 6 Quick Action Pills (2-Column Grid) */}
@@ -254,27 +258,6 @@ export default function HomeScreen() {
             </Pressable>
           </View>
 
-          {/* Tech Cyber Quiz Orange Pill Banner */}
-          <Pressable onPress={() => openUrl(config.externalLinks.cyberQuiz)}>
-            {({ pressed }) => (
-              <LinearGradient
-                colors={['#FF8A00', '#FFC266']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={[styles.quizBanner, pressed && styles.pressed]}>
-                <View style={styles.quizHeader}>
-                  <SymbolView
-                    name={{ ios: 'quote.bubble.fill', android: 'chat', web: 'chat' }}
-                    size={18}
-                    tintColor="#ffffff"
-                  />
-                  <Text style={styles.quizTitle}>{getCopy(config, 'homeQuizTitle', 'TECH CYBER QUIZ')}</Text>
-                </View>
-                <Text style={styles.quizSub}>{getCopy(config, 'homeQuizSubtitle', '🎁 Win Exciting Prizes! Play and Win! 🎁')}</Text>
-              </LinearGradient>
-            )}
-          </Pressable>
-
           {/* Emergency High-Contrast Button */}
           <Pressable
             onPress={() => router.push('/emergency')}
@@ -284,7 +267,7 @@ export default function HomeScreen() {
 
           {/* QUICK ACCESS Section */}
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{getCopy(config, 'homeQuickAccess', '⚡ QUICK ACCESS')}</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>{getCopy(config, 'homeQuickAccess', '⚡ QUICK ACCESS')}</Text>
           </View>
 
           {/* Horizontal Quick Access Rail */}
@@ -297,7 +280,7 @@ export default function HomeScreen() {
                 <View style={[styles.quickIconCircle, { backgroundColor: `${item.color}15` }]}>
                   <FontAwesome6 name={item.icon as ComponentProps<typeof FontAwesome6>['name']} size={20} color={item.color} />
                 </View>
-                <Text style={styles.quickLabel}>{item.label}</Text>
+                <Text style={[styles.quickLabel, { color: colors.text }]}>{item.label}</Text>
               </Pressable>
             ))}
           </ScrollView>
@@ -320,7 +303,7 @@ export default function HomeScreen() {
 
           {/* Explore Nearby Filter Section */}
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{getCopy(config, 'homeExploreNearby', '🔍 Explore Nearby')}</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>{getCopy(config, 'homeExploreNearby', '🔍 Explore Nearby')}</Text>
           </View>
 
           {/* Distance Chips */}
@@ -329,11 +312,15 @@ export default function HomeScreen() {
               <Pressable
                 key={d}
                 onPress={() => setSelectedDistance(d)}
-                style={[styles.distChip, selectedDistance === d && styles.distChipActive]}>
+                style={[
+                  styles.distChip,
+                  { backgroundColor: colors.input, borderColor: colors.border },
+                  selectedDistance === d && { backgroundColor: colors.accent, borderColor: colors.accent },
+                ]}>
                 <Text
                   style={[
                     styles.distChipText,
-                    selectedDistance === d && styles.distChipTextActive,
+                    { color: selectedDistance === d ? colors.inverseText : colors.text },
                   ]}>
                   {d}
                 </Text>
@@ -349,15 +336,15 @@ export default function HomeScreen() {
           ) : null}
 
           {/* Feature Card 1: Nearby Durga Puja */}
-          <View style={styles.featureCard}>
+          <View style={[styles.featureCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Image
               source={config.media.pandalFallbackImageUrl ?? require('@/assets/images/durga-bg-card.jpg')}
               style={styles.featureCardImg}
               contentFit="cover"
             />
             <View style={styles.featureCardContent}>
-              <Text style={styles.featureCardTitle}>{getCopy(config, 'homeNearbyPujaTitle', 'Nearby Durga Puja')}</Text>
-              <Text style={styles.featureCardSub}>
+              <Text style={[styles.featureCardTitle, { color: colors.text }]}>{getCopy(config, 'homeNearbyPujaTitle', 'Nearby Durga Puja')}</Text>
+              <Text style={[styles.featureCardSub, { color: colors.textSecondary }]}>
                 {getCopy(config, 'homeNearbyPujaSubtitle', 'Find nearby Durga Puja pandals in your area.')}
               </Text>
               <Pressable
@@ -367,22 +354,26 @@ export default function HomeScreen() {
                     params: { radiusKm: String(parseFloat(selectedDistance)) },
                   })
                 }
-                style={({ pressed }) => [styles.cardExploreBtn, pressed && styles.pressed]}>
-                <Text style={styles.cardExploreBtnText}>{getCopy(config, 'exploreAction', 'EXPLORE →')}</Text>
+                style={({ pressed }) => [
+                  styles.cardExploreBtn,
+                  { backgroundColor: colors.accentSoft, borderColor: colors.border },
+                  pressed && styles.pressed,
+                ]}>
+                <Text style={[styles.cardExploreBtnText, { color: colors.accent }]}>{getCopy(config, 'exploreAction', 'EXPLORE →')}</Text>
               </Pressable>
             </View>
           </View>
 
           {/* Feature Card 2: Nearby Hospitals */}
-          <View style={styles.featureCard}>
+          <View style={[styles.featureCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Image
               source={config.media.hospitalFallbackImageUrl ?? require('@/assets/images/hospital-bg-card.jpg')}
               style={styles.featureCardImg}
               contentFit="cover"
             />
             <View style={styles.featureCardContent}>
-              <Text style={styles.featureCardTitle}>{getCopy(config, 'homeNearbyHospitalsTitle', 'Nearby Hospitals')}</Text>
-              <Text style={styles.featureCardSub}>
+              <Text style={[styles.featureCardTitle, { color: colors.text }]}>{getCopy(config, 'homeNearbyHospitalsTitle', 'Nearby Hospitals')}</Text>
+              <Text style={[styles.featureCardSub, { color: colors.textSecondary }]}>
                 {getCopy(config, 'homeNearbyHospitalsSubtitle', 'Find nearby hospitals & emergency clinics in your area.')}
               </Text>
               <Pressable
@@ -392,8 +383,12 @@ export default function HomeScreen() {
                     params: { radiusKm: String(parseFloat(selectedDistance)) },
                   })
                 }
-                style={({ pressed }) => [styles.cardExploreBtn, pressed && styles.pressed]}>
-                <Text style={styles.cardExploreBtnText}>{getCopy(config, 'exploreAction', 'EXPLORE →')}</Text>
+                style={({ pressed }) => [
+                  styles.cardExploreBtn,
+                  { backgroundColor: colors.accentSoft, borderColor: colors.border },
+                  pressed && styles.pressed,
+                ]}>
+                <Text style={[styles.cardExploreBtnText, { color: colors.accent }]}>{getCopy(config, 'exploreAction', 'EXPLORE →')}</Text>
               </Pressable>
             </View>
           </View>
@@ -408,15 +403,15 @@ export default function HomeScreen() {
           </View>
 
           {/* Feature Card 3: Nearby Pharmacy */}
-          <View style={styles.featureCard}>
+          <View style={[styles.featureCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Image
               source={config.media.pharmacyFallbackImageUrl ?? require('@/assets/images/pharmacy-bg-card.jpg')}
               style={styles.featureCardImg}
               contentFit="cover"
             />
             <View style={styles.featureCardContent}>
-              <Text style={styles.featureCardTitle}>{getCopy(config, 'homeNearbyPharmacyTitle', 'Nearby Pharmacy')}</Text>
-              <Text style={styles.featureCardSub}>{getCopy(config, 'homeNearbyPharmacySubtitle', 'Find 24/7 pharmacies in your area.')}</Text>
+              <Text style={[styles.featureCardTitle, { color: colors.text }]}>{getCopy(config, 'homeNearbyPharmacyTitle', 'Nearby Pharmacy')}</Text>
+              <Text style={[styles.featureCardSub, { color: colors.textSecondary }]}>{getCopy(config, 'homeNearbyPharmacySubtitle', 'Find 24/7 pharmacies in your area.')}</Text>
               <Pressable
                 onPress={() =>
                   router.push({
@@ -424,28 +419,36 @@ export default function HomeScreen() {
                     params: { radiusKm: String(parseFloat(selectedDistance)) },
                   })
                 }
-                style={({ pressed }) => [styles.cardExploreBtn, pressed && styles.pressed]}>
-                <Text style={styles.cardExploreBtnText}>{getCopy(config, 'exploreAction', 'EXPLORE →')}</Text>
+                style={({ pressed }) => [
+                  styles.cardExploreBtn,
+                  { backgroundColor: colors.accentSoft, borderColor: colors.border },
+                  pressed && styles.pressed,
+                ]}>
+                <Text style={[styles.cardExploreBtnText, { color: colors.accent }]}>{getCopy(config, 'exploreAction', 'EXPLORE →')}</Text>
               </Pressable>
             </View>
           </View>
 
           {/* Feature Card 4: Nearby Police Station */}
-          <View style={styles.featureCard}>
+          <View style={[styles.featureCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Image
               source={config.media.policeFallbackImageUrl ?? require('@/assets/images/police-bg-card.jpg')}
               style={styles.featureCardImg}
               contentFit="cover"
             />
             <View style={styles.featureCardContent}>
-              <Text style={styles.featureCardTitle}>{getCopy(config, 'homeNearbyPoliceTitle', 'Nearby Police Stations')}</Text>
-              <Text style={styles.featureCardSub}>
+              <Text style={[styles.featureCardTitle, { color: colors.text }]}>{getCopy(config, 'homeNearbyPoliceTitle', 'Nearby Police Stations')}</Text>
+              <Text style={[styles.featureCardSub, { color: colors.textSecondary }]}>
                 {getCopy(config, 'homeNearbyPoliceSubtitle', `Find police stations & assistance booths across ${config.district}.`)}
               </Text>
               <Pressable
                 onPress={() => router.push('/emergency')}
-                style={({ pressed }) => [styles.cardExploreBtn, pressed && styles.pressed]}>
-                <Text style={styles.cardExploreBtnText}>{getCopy(config, 'exploreAction', 'EXPLORE →')}</Text>
+                style={({ pressed }) => [
+                  styles.cardExploreBtn,
+                  { backgroundColor: colors.accentSoft, borderColor: colors.border },
+                  pressed && styles.pressed,
+                ]}>
+                <Text style={[styles.cardExploreBtnText, { color: colors.accent }]}>{getCopy(config, 'exploreAction', 'EXPLORE →')}</Text>
               </Pressable>
             </View>
           </View>
@@ -457,14 +460,14 @@ export default function HomeScreen() {
               style={styles.footerArt}
               contentFit="contain"
             />
-            <Text style={styles.footerCredit}>{getCopy(config, 'footerCredit', 'Developed with ❤ for BDNPC')}</Text>
+            <Text style={[styles.footerCredit, { color: colors.textSecondary }]}>{getCopy(config, 'footerCredit', 'Developed with ❤ for BDNPC')}</Text>
           </View>
         </ScrollView>
 
         {/* Floating Controls */}
         {/* Bottom Left: Feedback Badge */}
         <View style={styles.floatingFeedbackWrap}>
-          <PulseRing color="#FF8A00" />
+          <PulseRing color={Brand.saffron} />
           <Pressable
             onPress={() => setShowFeedback(true)}
             style={({ pressed }) => [styles.floatingFeedback, pressed && styles.pressed]}>
@@ -478,7 +481,7 @@ export default function HomeScreen() {
 
         {/* Bottom Right: SOS Red Circle Button */}
         <View style={styles.floatingSosWrap}>
-          <PulseRing color="#FF1744" />
+          <PulseRing color={Brand.vermilion} />
           <Pressable
             onPress={() => setShowSos(true)}
             style={({ pressed }) => [styles.floatingSos, pressed && styles.pressed]}>
@@ -648,7 +651,6 @@ const styles = StyleSheet.create({
   // MAIN DASHBOARD STYLES
   mainContainer: {
     flex: 1,
-    backgroundColor: '#ffffff',
   },
   safeArea: {
     flex: 1,
@@ -660,7 +662,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#FFE0B2',
   },
   weatherBox: {
     flex: 1,
@@ -674,12 +675,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     fontSize: 15,
     fontWeight: '700',
-    color: '#212121',
   },
   weatherLoc: {
     fontFamily: 'Poppins-Regular',
     fontSize: 12,
-    color: '#616161',
     marginTop: 1,
   },
   socialGroup: {
@@ -702,14 +701,12 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     paddingVertical: 4,
     paddingHorizontal: 8,
-    borderRadius: 6,
-    backgroundColor: '#F3F4F6',
+    borderRadius: Radius.small,
     marginBottom: 10,
   },
   backToWelcomeText: {
     fontFamily: 'Poppins-Regular',
     fontSize: 12,
-    color: '#4B5563',
     fontWeight: '600',
   },
   actionGrid: {
@@ -725,15 +722,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#3595FF',
+    backgroundColor: Brand.saffronDeep,
     paddingVertical: 12,
     paddingHorizontal: 10,
-    borderRadius: 12,
-    shadowColor: '#3595FF',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3,
-    elevation: 3,
+    borderRadius: Radius.medium,
+    borderCurve: 'continuous',
+    boxShadow: '0 4px 12px rgba(184,81,0,0.28)',
   },
   actionPillText: {
     fontFamily: 'Poppins-Regular',
@@ -741,49 +735,15 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
   },
-  quizBanner: {
-    borderRadius: 24,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    marginBottom: 12,
-    shadowColor: '#FF8A00',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  quizHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 2,
-  },
-  quizTitle: {
-    fontFamily: 'Poppins-Regular',
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '800',
-    letterSpacing: 0.4,
-  },
-  quizSub: {
-    fontFamily: 'Poppins-Regular',
-    color: '#FFF3E0',
-    fontSize: 12,
-    fontWeight: '600',
-  },
   emergencyBtn: {
-    backgroundColor: '#FF1744',
-    borderRadius: 24,
+    backgroundColor: Brand.vermilion,
+    borderRadius: Radius.large,
+    borderCurve: 'continuous',
     paddingVertical: 13,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
-    shadowColor: '#FF1744',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
+    boxShadow: '0 5px 14px rgba(200,59,43,0.24)',
   },
   emergencyBtnText: {
     fontFamily: 'Poppins-Regular',
@@ -800,7 +760,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     fontSize: 15,
     fontWeight: '800',
-    color: '#212121',
     letterSpacing: 0.3,
   },
   quickRail: {
@@ -824,14 +783,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     fontSize: 12,
     fontWeight: '600',
-    color: '#424242',
     textAlign: 'center',
   },
   videoSection: {
     marginBottom: 14,
   },
   marqueeSection: {
-    borderRadius: 6,
+    borderRadius: Radius.small,
     overflow: 'hidden',
     marginBottom: 16,
   },
@@ -843,49 +801,35 @@ const styles = StyleSheet.create({
   distChip: {
     flex: 1,
     paddingVertical: 10,
-    borderRadius: 12,
-    backgroundColor: '#F5F5F7',
+    borderRadius: Radius.full,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  distChipActive: {
-    backgroundColor: '#3595FF',
-    borderColor: '#3595FF',
   },
   distChipText: {
     fontFamily: 'Poppins-Regular',
     fontSize: 13,
     fontWeight: '700',
-    color: '#374151',
-  },
-  distChipTextActive: {
-    color: '#ffffff',
   },
   adBannerCard: {
     width: '100%',
     height: 80,
-    borderRadius: 12,
+    borderRadius: Radius.medium,
+    borderCurve: 'continuous',
     overflow: 'hidden',
     marginBottom: 16,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Brand.creamDeep,
   },
   adBannerImg: {
     width: '100%',
     height: '100%',
   },
   featureCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
+    borderRadius: Radius.large,
+    borderCurve: 'continuous',
     overflow: 'hidden',
     marginBottom: 18,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 5,
-    elevation: 2,
+    boxShadow: '0 3px 12px rgba(106,56,12,0.1)',
   },
   featureCardImg: {
     width: '100%',
@@ -898,29 +842,24 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     fontSize: 18,
     fontWeight: '800',
-    color: '#111827',
     marginBottom: 4,
   },
   featureCardSub: {
     fontFamily: 'Poppins-Regular',
     fontSize: 13,
-    color: '#6B7280',
     marginBottom: 14,
   },
   cardExploreBtn: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 20,
+    borderRadius: Radius.full,
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignSelf: 'flex-start',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
   },
   cardExploreBtnText: {
     fontFamily: 'Poppins-Regular',
     fontSize: 13,
     fontWeight: '700',
-    color: '#3595FF',
   },
   footerSection: {
     alignItems: 'center',
@@ -935,7 +874,6 @@ const styles = StyleSheet.create({
   footerCredit: {
     fontFamily: 'Poppins-Regular',
     fontSize: 13,
-    color: '#9CA3AF',
     marginTop: 10,
     fontWeight: '500',
   },
@@ -978,14 +916,10 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#FF1744',
+    backgroundColor: Brand.vermilion,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#FF1744',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 7,
+    boxShadow: '0 5px 14px rgba(200,59,43,0.4)',
   },
   sosText: {
     fontFamily: 'Poppins-Regular',

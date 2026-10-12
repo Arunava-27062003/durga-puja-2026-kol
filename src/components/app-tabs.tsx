@@ -1,18 +1,26 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
-import { Colors } from '@/constants/theme';
 import { getCopy, useAppContent } from '@/content/app-content';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function AppTabs() {
-  const colors = Colors.light;
+  const colors = useTheme();
   const { content } = useAppContent();
   const { config } = content;
+  const configuredSettingsLabel = getCopy(config, 'tabAbout', 'Settings');
+  const settingsLabel = configuredSettingsLabel === 'About' ? 'Settings' : configuredSettingsLabel;
 
   return (
     <NativeTabs
       backgroundColor={colors.background}
       indicatorColor={colors.backgroundElement}
-      labelStyle={{ selected: { color: colors.text } }}>
+      labelVisibilityMode="labeled"
+      backBehavior="history"
+      iconColor={{ default: colors.textSecondary, selected: colors.accent }}
+      labelStyle={{
+        default: { color: colors.textSecondary },
+        selected: { color: colors.text },
+      }}>
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>{getCopy(config, 'tabHome', 'Home')}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
@@ -37,8 +45,8 @@ export default function AppTabs() {
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="about">
-        <NativeTabs.Trigger.Label>{getCopy(config, 'tabAbout', 'About')}</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="info.circle" md="info" />
+        <NativeTabs.Trigger.Label>{settingsLabel}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="gearshape.fill" md="settings" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );

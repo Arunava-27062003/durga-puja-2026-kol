@@ -1,5 +1,8 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { Brand, Radius, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+
 import { ThemedText } from './themed-text';
 
 const OPTIONS = ['All', '0.5 KM', '1 KM', '2 KM', '3 KM'] as const;
@@ -10,6 +13,8 @@ type Props = {
 };
 
 export function DistanceFilter({ value, onChange }: Props) {
+  const colors = useTheme();
+
   return (
     <View style={styles.row}>
       {OPTIONS.map((opt) => {
@@ -18,9 +23,18 @@ export function DistanceFilter({ value, onChange }: Props) {
         return (
           <Pressable
             key={opt}
+            accessibilityRole="button"
+            accessibilityState={{ selected: active }}
             onPress={() => onChange(km)}
-            style={[styles.chip, active && styles.chipActive]}>
-            <ThemedText type="small" style={active ? styles.textActive : undefined}>
+            style={({ pressed }) => [
+              styles.chip,
+              { backgroundColor: colors.input, borderColor: colors.border },
+              active && { backgroundColor: colors.accent, borderColor: colors.accent },
+              pressed && styles.pressed,
+            ]}>
+            <ThemedText
+              type="smallBold"
+              style={[styles.text, { color: colors.text }, active && { color: colors.inverseText }]}>
               {opt}
             </ThemedText>
           </Pressable>
@@ -34,19 +48,18 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 16,
+    gap: Spacing.two,
+    marginBottom: Spacing.three,
   },
   chip: {
-    paddingVertical: 8,
+    minHeight: 44,
+    justifyContent: 'center',
+    paddingVertical: 9,
     paddingHorizontal: 14,
-    borderRadius: 20,
-    backgroundColor: '#F0F0F3',
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: Brand.divider,
   },
-  chipActive: {
-    backgroundColor: '#3595FF',
-  },
-  textActive: {
-    color: '#ffffff',
-  },
+  text: { fontSize: 12 },
+  pressed: { opacity: 0.72 },
 });

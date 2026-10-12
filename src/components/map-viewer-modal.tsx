@@ -1,4 +1,5 @@
 import { SymbolView } from 'expo-symbols';
+import { useState } from 'react';
 import { Dimensions, Image, Modal, Pressable, StyleSheet } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -26,6 +27,25 @@ export function MapViewerModal({ visible, imageUrl, imageAspectRatio, onClose }:
   const translateY = useSharedValue(0);
   const savedTranslateX = useSharedValue(0);
   const savedTranslateY = useSharedValue(0);
+
+  // This component never unmounts — only the RN <Modal>'s `visible` prop
+  // toggles — so shared values from a previous zoom/pan session would
+  // otherwise persist into the next open. Reset once the modal is dismissed.
+  // Comparing during render (not in an effect) avoids the React Compiler
+  // treating these shared values as effect-tracked, which would forbid
+  // mutating them anywhere else in this component.
+  const [prevVisible, setPrevVisible] = useState(visible);
+  if (prevVisible !== visible) {
+    setPrevVisible(visible);
+    if (!visible) {
+      scale.value = 1;
+      savedScale.value = 1;
+      translateX.value = 0;
+      translateY.value = 0;
+      savedTranslateX.value = 0;
+      savedTranslateY.value = 0;
+    }
+  }
 
   const pinchGesture = Gesture.Pinch()
     .onUpdate((e) => {

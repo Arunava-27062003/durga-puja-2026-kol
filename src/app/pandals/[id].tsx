@@ -7,12 +7,14 @@ import { useLocalSearchParams } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { getCopy, useAppContent } from '@/content/app-content';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { BottomTabInset, Brand, MaxContentWidth, Radius, Spacing, WebNavInset } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function PandalDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { content } = useAppContent();
   const { config, pandals } = content;
+  const colors = useTheme();
   const pandal = pandals.find((p) => p.id === id);
   const directionsQuery = pandal
     ? pandal.lat !== null && pandal.lng !== null
@@ -22,7 +24,7 @@ export default function PandalDetailScreen() {
 
   if (!pandal) {
     return (
-      <ThemedView style={styles.container}>
+      <ThemedView style={[styles.container, { backgroundColor: colors.background }]}>
         <SafeAreaView style={styles.safeArea} edges={['top']}>
           <ThemedText>{getCopy(config, 'pandalNotFound', 'Pandal not found.')}</ThemedText>
         </SafeAreaView>
@@ -31,9 +33,9 @@ export default function PandalDetailScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, { backgroundColor: colors.background }]}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <Image
             source={pandal.imageUrl ?? config.media.pandalFallbackImageUrl ?? require('@/assets/images/durga-bg-card.jpg')}
             placeholder={require('@/assets/images/durga-bg-card.jpg')}
@@ -43,7 +45,7 @@ export default function PandalDetailScreen() {
           <ThemedText type="title" style={styles.title}>
             {pandal.name}
           </ThemedText>
-          <ThemedText type="smallBold" themeColor="textSecondary">
+          <ThemedText type="smallBold" style={{ color: colors.accent }}>
             {pandal.area}
           </ThemedText>
           {pandal.budgetCategory ? (
@@ -51,11 +53,11 @@ export default function PandalDetailScreen() {
               {pandal.budgetCategory}
             </ThemedText>
           ) : null}
-          <ThemedText type="default" style={styles.description}>
+          <ThemedText type="default" themeColor="textSecondary" style={styles.description}>
             {pandal.description}
           </ThemedText>
 
-          <ThemedView style={styles.section}>
+          <ThemedView style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <ThemedText type="smallBold">{getCopy(config, 'pandalAddress', 'Address')}</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
               {pandal.address}
@@ -63,7 +65,7 @@ export default function PandalDetailScreen() {
           </ThemedView>
 
           {pandal.timings ? (
-            <ThemedView style={styles.section}>
+            <ThemedView style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <ThemedText type="smallBold">{getCopy(config, 'pandalTimings', 'Timings')}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
                 {pandal.timings}
@@ -73,6 +75,7 @@ export default function PandalDetailScreen() {
 
           <ThemedText
             type="linkPrimary"
+            style={[styles.directions, { backgroundColor: colors.accent, color: colors.inverseText }]}
             onPress={() =>
               Linking.openURL(
                 `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(directionsQuery)}`,
@@ -97,25 +100,44 @@ const styles = StyleSheet.create({
     maxWidth: MaxContentWidth,
   },
   content: {
-    paddingHorizontal: Spacing.four,
+    paddingHorizontal: Spacing.three,
+    paddingTop: WebNavInset + Spacing.two,
     paddingBottom: BottomTabInset + Spacing.four,
     gap: Spacing.two,
   },
   heroImage: {
     width: '100%',
     aspectRatio: 16 / 10,
-    borderRadius: Spacing.three,
+    borderRadius: Radius.large,
+    borderCurve: 'continuous',
     marginBottom: Spacing.two,
+    backgroundColor: Brand.creamDeep,
   },
   title: {
     fontSize: 28,
     lineHeight: 34,
+    fontWeight: '700',
   },
   description: {
     marginTop: Spacing.two,
   },
   section: {
+    marginTop: Spacing.two,
+    gap: Spacing.one,
+    borderWidth: 1,
+    borderLeftWidth: 4,
+    borderLeftColor: Brand.saffron,
+    borderRadius: Radius.medium,
+    padding: Spacing.three,
+  },
+  directions: {
     marginTop: Spacing.three,
-    gap: Spacing.half,
+    alignSelf: 'flex-start',
+    overflow: 'hidden',
+    borderRadius: Radius.full,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    textAlign: 'center',
+    fontWeight: '700',
   },
 });

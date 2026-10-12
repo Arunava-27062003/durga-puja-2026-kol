@@ -143,7 +143,6 @@ const fallbackConfig: AppConfig = {
     instagram: 'https://www.instagram.com/bidhannagarcitypolice',
   },
   externalLinks: {
-    cyberQuiz: 'https://forms.gle/N7m5F7L1wqhArheb6',
     parkingZones: 'https://www.bidhannagarpolice.in/parkingzones',
   },
   copy: {},

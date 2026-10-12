@@ -3,8 +3,8 @@
  * https://docs.expo.dev/guides/color-schemes/
  */
 
-import { Colors } from '@/constants/theme';
+import { useAppTheme } from '@/theme/theme-context';
 
 export function useTheme() {
-  return Colors.light;
+  return useAppTheme().colors;
 }

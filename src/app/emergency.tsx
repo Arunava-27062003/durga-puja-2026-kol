@@ -1,3 +1,4 @@
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,16 +7,18 @@ import { CallButton } from '@/components/call-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { getCopy, useAppContent } from '@/content/app-content';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { BottomTabInset, Brand, MaxContentWidth, Radius, Spacing, WebNavInset } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function EmergencyScreen() {
   const { content } = useAppContent();
   const { config, emergencyContacts } = content;
+  const colors = useTheme();
 
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.brandHeader}>
             <Image
               source={config.media.policeLogoImageUrl ?? require('@/assets/images/bidhannagar_police.jpg')}
@@ -24,6 +27,9 @@ export default function EmergencyScreen() {
               contentFit="contain"
             />
             <View style={styles.brandCopy}>
+              <ThemedText type="smallBold" style={[styles.eyebrow, { color: colors.accent }]}>
+                {config.policeName.toUpperCase()}
+              </ThemedText>
               <ThemedText type="title" style={styles.title}>
                 {getCopy(config, 'emergencyTitle', 'Emergency')}
               </ThemedText>
@@ -33,7 +39,11 @@ export default function EmergencyScreen() {
             </View>
           </View>
 
-          <Pressable style={styles.sos} onPress={() => Linking.openURL(`tel:${config.emergency.phone}`)}>
+          <Pressable
+            accessibilityRole="button"
+            style={({ pressed }) => [styles.sos, pressed && styles.pressed]}
+            onPress={() => Linking.openURL(`tel:${config.emergency.phone}`)}>
+            <FontAwesome6 name="phone-volume" size={22} color={Brand.white} />
             <ThemedText type="subtitle" style={styles.sosText} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.75}>
               {getCopy(config, 'emergencySosLabel', `SOS — Call ${config.emergency.label}`)}
             </ThemedText>
@@ -41,7 +51,9 @@ export default function EmergencyScreen() {
 
           <ThemedView style={styles.grid}>
             {emergencyContacts.map((c) => (
-              <ThemedView key={c.id} type="backgroundElement" style={styles.card}>
+              <ThemedView
+                key={c.id}
+                style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                 <ThemedText type="smallBold">{c.label}</ThemedText>
                 {c.phone ? (
                   <ThemedText type="small" themeColor="textSecondary">
@@ -69,10 +81,13 @@ const styles = StyleSheet.create({
     maxWidth: MaxContentWidth,
   },
   content: {
-    paddingHorizontal: Spacing.four,
+    paddingHorizontal: Spacing.three,
+    paddingTop: WebNavInset + Spacing.two,
     paddingBottom: BottomTabInset + Spacing.four,
-    gap: Spacing.four,
+    gap: Spacing.three,
   },
+  eyebrow: { fontSize: 9, lineHeight: 13, letterSpacing: 1.2 },
+  pressed: { opacity: 0.78 },
   brandHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -81,6 +96,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 60,
     height: 60,
+    borderRadius: Radius.medium,
   },
   brandCopy: {
     flex: 1,
@@ -89,15 +105,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     lineHeight: 34,
+    fontWeight: '700',
   },
   sos: {
-    backgroundColor: '#D32F2F',
-    borderRadius: Spacing.three,
+    backgroundColor: Brand.vermilion,
+    borderRadius: Radius.medium,
     paddingVertical: Spacing.four,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: Spacing.three,
     paddingHorizontal: Spacing.three,
   },
   sosText: {
+    flexShrink: 1,
     color: '#ffffff',
     fontSize: 20,
     lineHeight: 27,
@@ -107,7 +128,10 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   card: {
-    borderRadius: Spacing.two,
+    borderWidth: 1,
+    borderLeftWidth: 4,
+    borderLeftColor: Brand.saffron,
+    borderRadius: Radius.medium,
     padding: Spacing.three,
     gap: Spacing.one,
   },

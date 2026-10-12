@@ -1,3 +1,4 @@
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
@@ -8,13 +9,15 @@ import { PlaceCard } from '@/components/place-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { getCopy, useAppContent } from '@/content/app-content';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { BottomTabInset, MaxContentWidth, Radius, Spacing, WebNavInset } from '@/constants/theme';
 import { useLocation } from '@/hooks/use-location';
+import { useTheme } from '@/hooks/use-theme';
 import { getDistanceKm } from '@/utils/distance';
 
 export default function PandalsScreen() {
   const { content } = useAppContent();
   const { config, pandals } = content;
+  const colors = useTheme();
   const location = useLocation();
   const params = useLocalSearchParams<{ radiusKm?: string }>();
   const [query, setQuery] = useState('');
@@ -79,7 +82,7 @@ export default function PandalsScreen() {
   }, [area, budget, location, pandals, query, radiusKm]);
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, { backgroundColor: colors.background }]}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <FlatList
           data={filtered}
@@ -92,22 +95,35 @@ export default function PandalsScreen() {
           removeClippedSubviews
           ListHeaderComponent={
             <View style={styles.header}>
-              <ThemedText type="title" style={styles.title}>
-                {getCopy(config, 'pandalsTitle', 'Pandals')}
-              </ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">
-                {pandals.length} pandals across {areas.length - 1} police stations
-              </ThemedText>
-              <TextInput
-                accessibilityLabel={getCopy(config, 'pandalsSearchAccessibility', 'Search pandals')}
-                value={query}
-                onChangeText={setQuery}
-                placeholder={getCopy(config, 'pandalsSearchPlaceholder', 'Search name, address or police station')}
-                placeholderTextColor="#60646C"
-                style={styles.search}
-                returnKeyType="search"
-              />
-              <ThemedText type="smallBold" style={styles.filterLabel}>
+              <View style={styles.titleRow}>
+                <View style={[styles.titleIcon, { backgroundColor: colors.accentSoft }]}>
+                  <FontAwesome6 name="gopuram" size={22} color={colors.accent} />
+                </View>
+                <View style={styles.titleCopy}>
+                  <ThemedText type="smallBold" style={[styles.eyebrow, { color: colors.accent }]}>
+                    {getCopy(config, 'pandalsEyebrow', 'DURGA PUJA 2026')}
+                  </ThemedText>
+                  <ThemedText type="title" style={styles.title}>
+                    {getCopy(config, 'pandalsTitle', 'Pandals')}
+                  </ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">
+                    {pandals.length} pandals across {areas.length - 1} police stations
+                  </ThemedText>
+                </View>
+              </View>
+              <View style={[styles.searchShell, { backgroundColor: colors.input, borderColor: colors.border }]}>
+                <FontAwesome6 name="magnifying-glass" size={16} color={colors.textSecondary} />
+                <TextInput
+                  accessibilityLabel={getCopy(config, 'pandalsSearchAccessibility', 'Search pandals')}
+                  value={query}
+                  onChangeText={setQuery}
+                  placeholder={getCopy(config, 'pandalsSearchPlaceholder', 'Search name, address or police station')}
+                  placeholderTextColor={colors.textSecondary}
+                  style={[styles.search, { color: colors.text }]}
+                  returnKeyType="search"
+                />
+              </View>
+              <ThemedText type="smallBold" style={[styles.filterLabel, { color: colors.textSecondary }]}>
                 {getCopy(config, 'pandalsPoliceStationFilter', 'POLICE STATION')}
               </ThemedText>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRail}>
@@ -115,14 +131,14 @@ export default function PandalsScreen() {
                   <Pressable
                     key={item}
                     onPress={() => setArea(item)}
-                    style={[styles.chip, item === area && styles.chipActive]}>
-                    <ThemedText type="small" style={item === area ? styles.chipTextActive : undefined}>
+                    style={[styles.chip, { backgroundColor: colors.input, borderColor: colors.border }, item === area && { backgroundColor: colors.accent, borderColor: colors.accent }]}>
+                    <ThemedText type="small" style={{ color: item === area ? colors.inverseText : colors.text }}>
                       {item}
                     </ThemedText>
                   </Pressable>
                 ))}
               </ScrollView>
-              <ThemedText type="smallBold" style={styles.filterLabel}>
+              <ThemedText type="smallBold" style={[styles.filterLabel, { color: colors.textSecondary }]}>
                 {getCopy(config, 'pandalsBudgetFilter', 'BUDGET CATEGORY')}
               </ThemedText>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRail}>
@@ -130,8 +146,8 @@ export default function PandalsScreen() {
                   <Pressable
                     key={item}
                     onPress={() => setBudget(item)}
-                    style={[styles.chip, item === budget && styles.chipActive]}>
-                    <ThemedText type="small" style={item === budget ? styles.chipTextActive : undefined}>
+                    style={[styles.chip, { backgroundColor: colors.input, borderColor: colors.border }, item === budget && { backgroundColor: colors.accent, borderColor: colors.accent }]}>
+                    <ThemedText type="small" style={{ color: item === budget ? colors.inverseText : colors.text }}>
                       {item}
                     </ThemedText>
                   </Pressable>
@@ -142,11 +158,11 @@ export default function PandalsScreen() {
                   {getCopy(config, 'pandalsLocationDenied', 'Enable location to see pandals sorted by distance.')}
                 </ThemedText>
               )}
-              <ThemedText type="smallBold" style={styles.filterLabel}>
+              <ThemedText type="smallBold" style={[styles.filterLabel, { color: colors.textSecondary }]}>
                 {getCopy(config, 'distanceFromYou', 'DISTANCE FROM YOU')}
               </ThemedText>
               <DistanceFilter value={radiusKm} onChange={setRadiusKm} />
-              <ThemedText type="smallBold" style={styles.results}>
+              <ThemedText type="smallBold" style={[styles.results, { color: colors.accent }]}>
                 {filtered.length} {filtered.length === 1 ? 'result' : 'results'}
               </ThemedText>
             </View>
@@ -188,32 +204,37 @@ const styles = StyleSheet.create({
     maxWidth: MaxContentWidth,
   },
   content: {
-    paddingHorizontal: Spacing.four,
+    paddingHorizontal: Spacing.three,
+    paddingTop: WebNavInset,
     paddingBottom: BottomTabInset + Spacing.four,
   },
   header: {
-    gap: Spacing.two,
+    gap: 14,
     marginBottom: Spacing.three,
   },
-  title: {
-    fontSize: 32,
-    lineHeight: 38,
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: Spacing.two },
+  titleIcon: { width: 52, height: 52, borderRadius: Radius.medium, alignItems: 'center', justifyContent: 'center' },
+  titleCopy: { flex: 1 },
+  eyebrow: { fontSize: 9, lineHeight: 13, letterSpacing: 1.2 },
+  title: { fontSize: 28, lineHeight: 34, fontWeight: '700' },
+  searchShell: {
+    height: 50,
+    borderRadius: Radius.medium,
+    borderWidth: 1,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    boxShadow: '0 2px 10px rgba(106,56,12,0.08)',
   },
   search: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: '#D9D9DF',
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    color: '#212121',
-    backgroundColor: '#F7F7F9',
+    flex: 1,
     fontFamily: 'Poppins-Regular',
     fontSize: 14,
   },
   filterLabel: {
-    color: '#60646C',
-    fontSize: 10,
-    letterSpacing: 1,
+    fontSize: 9,
+    letterSpacing: 1.1,
     marginTop: Spacing.one,
   },
   chipRail: {
@@ -221,29 +242,19 @@ const styles = StyleSheet.create({
     paddingRight: Spacing.four,
   },
   chip: {
-    borderRadius: 999,
+    borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: '#D9D9DF',
-    backgroundColor: '#F7F7F9',
     paddingHorizontal: 13,
     paddingVertical: 8,
   },
-  chipActive: {
-    borderColor: '#1E3A8A',
-    backgroundColor: '#1E3A8A',
-  },
-  chipTextActive: {
-    color: '#FFFFFF',
-  },
   results: {
-    color: '#1E3A8A',
     marginTop: Spacing.one,
   },
   hint: {
     marginTop: Spacing.one,
   },
   empty: {
-    paddingVertical: Spacing.four,
+    paddingVertical: 28,
     textAlign: 'center',
   },
 });

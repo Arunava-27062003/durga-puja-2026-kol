@@ -1,7 +1,7 @@
 import { Linking, Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { Brand, Radius, Spacing } from '@/constants/theme';
 
 type Props = {
   phone: string;
@@ -27,8 +27,8 @@ export function CallButton({ phone, label = 'Call', style }: Props) {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#D32F2F',
-    borderRadius: Spacing.two,
+    backgroundColor: Brand.vermilion,
+    borderRadius: Radius.small,
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.three,
     alignItems: 'center',
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#9E9E9E',
   },
   text: {
-    color: '#ffffff',
+    color: Brand.white,
     textAlign: 'center',
   },
 });

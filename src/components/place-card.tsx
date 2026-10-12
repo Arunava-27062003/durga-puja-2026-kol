@@ -3,7 +3,8 @@ import { Linking, Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { Brand, Radius, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { formatDistance } from '@/utils/distance';
 
 type Props = {
@@ -25,11 +26,12 @@ export function PlaceCard({ name, address, distanceKm, lat, lng, kind, thumbnail
   const fallback = kind === 'pandal'
     ? require('@/assets/images/durga-bg-card.jpg')
     : require('@/assets/images/police-bg-card.jpg');
+  const colors = useTheme();
   const mapQuery = lat !== null && lng !== null ? `${lat},${lng}` : directionsQuery?.trim();
 
   return (
-    <Pressable onPress={onPress}>
-      <ThemedView type="backgroundElement" style={styles.card}>
+    <Pressable onPress={onPress} style={({ pressed }) => pressed && styles.pressed}>
+      <ThemedView style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <Image
           source={thumbnailSource ?? fallback}
           placeholder={fallback}
@@ -37,13 +39,13 @@ export function PlaceCard({ name, address, distanceKm, lat, lng, kind, thumbnail
           contentFit="cover"
           transition={180}
         />
-        <ThemedView style={styles.copy} type="backgroundElement">
-          <ThemedView style={styles.header} type="backgroundElement">
+        <ThemedView style={styles.copy} type="surface">
+          <ThemedView style={styles.header} type="surface">
             <ThemedText type="smallBold" style={styles.name}>
               {name}
             </ThemedText>
             {distanceKm !== undefined && (
-              <ThemedText type="small" themeColor="textSecondary">
+              <ThemedText type="small" style={[styles.distance, { color: colors.accent }]}>
                 {formatDistance(distanceKm)}
               </ThemedText>
             )}
@@ -64,7 +66,7 @@ export function PlaceCard({ name, address, distanceKm, lat, lng, kind, thumbnail
                   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`,
                 );
               }}>
-              <ThemedText type="linkPrimary">{directionsLabel}</ThemedText>
+              <ThemedText type="linkPrimary" style={styles.directionsText}>{directionsLabel}</ThemedText>
             </Pressable>
           ) : null}
         </ThemedView>
@@ -75,25 +77,36 @@ export function PlaceCard({ name, address, distanceKm, lat, lng, kind, thumbnail
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: Spacing.two,
-    padding: Spacing.three,
-    gap: Spacing.one,
-    marginBottom: Spacing.two,
+    minHeight: 126,
+    padding: 10,
+    gap: 12,
+    marginBottom: 10,
     flexDirection: 'row',
+    alignItems: 'flex-start',
+    borderRadius: Radius.large,
+    borderCurve: 'continuous',
+    borderWidth: 1,
+    boxShadow: '0 3px 12px rgba(106,56,12,0.1)',
   },
+  pressed: { opacity: 0.82, transform: [{ scale: 0.995 }] },
   thumbnail: {
-    width: 84,
-    height: 100,
-    borderRadius: Spacing.two,
+    width: 88,
+    height: 106,
+    borderRadius: Radius.medium,
+    borderCurve: 'continuous',
+    backgroundColor: Brand.creamDeep,
   },
+  distance: { fontSize: 11, fontVariant: ['tabular-nums'] },
+  directionsText: { color: Brand.policeBlue, fontSize: 12 },
   copy: {
     flex: 1,
-    gap: Spacing.one,
+    minHeight: 106,
+    gap: 4,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: Spacing.two,
   },
   name: {

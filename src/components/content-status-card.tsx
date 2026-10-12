@@ -4,12 +4,13 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { getCopy, useAppContent } from '@/content/app-content';
-import { Spacing } from '@/constants/theme';
+import { Brand, Radius, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 const SOURCE_DETAILS = {
   remote: { labelKey: 'sourceRemote', fallback: 'Live server', color: '#18794E', backgroundColor: '#E9F7EF' },
   cached: { labelKey: 'sourceCached', fallback: 'Saved server data', color: '#8A5700', backgroundColor: '#FFF4D6' },
-  bundled: { labelKey: 'sourceBundled', fallback: 'Built-in data', color: '#60646C', backgroundColor: '#EEF1F5' },
+  bundled: { labelKey: 'sourceBundled', fallback: 'Built-in data', color: '#687286', backgroundColor: '#EEF1F5' },
 } as const;
 
 function formatUpdatedAt(value: string) {
@@ -18,6 +19,7 @@ function formatUpdatedAt(value: string) {
 }
 
 export function ContentStatusCard() {
+  const colors = useTheme();
   const { content, refresh, source } = useAppContent();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -36,7 +38,7 @@ export function ContentStatusCard() {
   };
 
   return (
-    <ThemedView style={styles.card}>
+    <ThemedView style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <View style={styles.headingRow}>
         <ThemedText type="smallBold">{getCopy(content.config, 'appDataTitle', 'App data')}</ThemedText>
         <View style={[styles.statusBadge, { backgroundColor: sourceDetails.backgroundColor }]}>
@@ -65,11 +67,12 @@ export function ContentStatusCard() {
         onPress={handleRefresh}
         style={({ pressed }) => [
           styles.refreshButton,
+          { backgroundColor: colors.accent },
           pressed && !isRefreshing && styles.refreshButtonPressed,
           isRefreshing && styles.refreshButtonDisabled,
         ]}>
-        {isRefreshing ? <ActivityIndicator color="#FFFFFF" size="small" /> : null}
-        <ThemedText type="smallBold" style={styles.refreshButtonText}>
+        {isRefreshing ? <ActivityIndicator color={Brand.white} size="small" /> : null}
+        <ThemedText type="smallBold" style={[styles.refreshButtonText, { color: colors.inverseText }]}>
           {isRefreshing
             ? getCopy(content.config, 'checkingServerLabel', 'Checking server…')
             : getCopy(content.config, 'refreshDataLabel', 'Refresh data')}
@@ -90,9 +93,9 @@ const styles = StyleSheet.create({
     gap: Spacing.three,
     padding: Spacing.three,
     borderWidth: 1,
-    borderColor: '#E0E1E6',
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
+    borderColor: Brand.divider,
+    borderRadius: Radius.medium,
+    backgroundColor: Brand.surface,
   },
   headingRow: {
     flexDirection: 'row',
@@ -106,7 +109,7 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
-    borderRadius: 999,
+    borderRadius: Radius.full,
   },
   statusDot: {
     width: 8,
@@ -123,8 +126,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: Spacing.two,
     paddingHorizontal: Spacing.three,
-    borderRadius: 10,
-    backgroundColor: '#225EA8',
+    borderRadius: Radius.small,
+    backgroundColor: Brand.saffronDeep,
   },
   refreshButtonPressed: {
     opacity: 0.82,
@@ -133,6 +136,6 @@ const styles = StyleSheet.create({
     opacity: 0.68,
   },
   refreshButtonText: {
-    color: '#FFFFFF',
+    color: Brand.white,
   },
 });
