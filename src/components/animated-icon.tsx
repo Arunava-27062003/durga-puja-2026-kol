@@ -3,6 +3,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { Easing, Keyframe } from 'react-native-reanimated';
+import { Brand } from '@/constants/theme';
 import { scheduleOnRN } from 'react-native-worklets';
 
 const DURATION = 2600;
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   },
   splashOverlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: '#FB0707',
+    backgroundColor: Brand.splash,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,

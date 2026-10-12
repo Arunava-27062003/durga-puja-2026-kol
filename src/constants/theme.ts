@@ -51,6 +51,8 @@ export const Brand = {
   saffronDark: '#6A380C',
   saffronSoft: '#FFD9A6',
   saffronWash: '#FFF0DA',
+  /** Launcher icon and splash background. */
+  splash: '#D9730D',
   marigold: '#FFAD2F',
   cream: '#FFF2E2',
   creamDeep: '#FFE5C2',
