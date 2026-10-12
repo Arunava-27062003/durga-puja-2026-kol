@@ -1,5 +1,6 @@
 import { useState, type ComponentProps } from 'react';
 import {
+  Alert,
   Dimensions,
   ImageBackground,
   Linking,
@@ -73,6 +74,33 @@ export default function HomeScreen() {
 
   const openUrl = (url: string) => {
     Linking.openURL(url).catch(() => {});
+  };
+
+  // Bidhannagar Police host the parking page themselves, so check it answers before sending visitors there.
+  const openParkingZones = async () => {
+    const url = config.externalLinks.parkingZones?.trim();
+    let reachable = false;
+    if (url) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 6000);
+      try {
+        const response = await fetch(url, { signal: controller.signal });
+        reachable = response.status < 400;
+      } catch {
+        reachable = false;
+      } finally {
+        clearTimeout(timer);
+        controller.abort();
+      }
+    }
+    if (url && reachable) {
+      openUrl(url);
+      return;
+    }
+    Alert.alert(
+      getCopy(config, 'parkingUnavailableTitle', 'Parking information'),
+      getCopy(config, 'parkingUnavailableBody', 'Parking zone details are not available right now. Please check back soon.'),
+    );
   };
 
   const dial = (phone: string) => {
@@ -236,7 +264,7 @@ export default function HomeScreen() {
             </Pressable>
 
             <Pressable
-              onPress={() => openUrl(config.externalLinks.parkingZones)}
+              onPress={() => void openParkingZones()}
               style={({ pressed }) => [styles.actionPill, pressed && styles.pressed]}>
               <SymbolView
                 name={{ ios: 'parkingsign', android: 'local_parking', web: 'local_parking' }}
