@@ -421,15 +421,6 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {/* Sponsor Ad Banner 2 */}
-          <View style={styles.adBannerCard}>
-            <Image
-              source={config.media.sponsorBannerImageUrl ?? require('@/assets/images/ads/ad_1.jpg')}
-              style={styles.adBannerImg}
-              contentFit="cover"
-            />
-          </View>
-
           {/* Feature Card 3: Nearby Pharmacy */}
           <View style={[styles.featureCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Image

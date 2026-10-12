@@ -96,7 +96,6 @@ export type AppConfig = {
     hospitalFallbackImageUrl?: string;
     pharmacyFallbackImageUrl?: string;
     policeFallbackImageUrl?: string;
-    sponsorBannerImageUrl?: string;
     footerImageUrl?: string;
     feedbackImageUrl?: string;
   };
@@ -144,6 +143,7 @@ const fallbackConfig: AppConfig = {
   },
   externalLinks: {
     parkingZones: 'https://www.bidhannagarpolice.in/parkingzones',
+    feedbackEndpoint: 'https://durgapujaapi.iema.co/api/v1/apps/bidhannagar/feedback',
   },
   copy: {},
   weather: { temperature: '—', location: 'Salt Lake, Kolkata' },
