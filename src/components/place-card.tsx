@@ -16,14 +16,16 @@ type Props = {
   thumbnailSource?: ImageSource | string;
   onPress?: () => void;
   directionsLabel?: string;
+  directionsQuery?: string;
+  meta?: string;
 };
 
 /** Shared list row for a pandal or nearby service: name, address, optional distance badge, directions link. */
-export function PlaceCard({ name, address, distanceKm, lat, lng, kind, thumbnailSource, onPress, directionsLabel = 'Get Directions' }: Props) {
+export function PlaceCard({ name, address, distanceKm, lat, lng, kind, thumbnailSource, onPress, directionsLabel = 'Get Directions', directionsQuery, meta }: Props) {
   const fallback = kind === 'pandal'
     ? require('@/assets/images/durga-bg-card.jpg')
     : require('@/assets/images/police-bg-card.jpg');
-  const hasCoordinates = lat !== null && lng !== null;
+  const mapQuery = lat !== null && lng !== null ? `${lat},${lng}` : directionsQuery?.trim();
 
   return (
     <Pressable onPress={onPress}>
@@ -46,14 +48,22 @@ export function PlaceCard({ name, address, distanceKm, lat, lng, kind, thumbnail
               </ThemedText>
             )}
           </ThemedView>
+          {meta ? (
+            <ThemedText type="smallBold" themeColor="textSecondary" numberOfLines={1}>
+              {meta}
+            </ThemedText>
+          ) : null}
           <ThemedText type="small" themeColor="textSecondary" numberOfLines={2}>
             {address}
           </ThemedText>
-          {hasCoordinates ? (
+          {mapQuery ? (
             <Pressable
-              onPress={() =>
-                Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`)
-              }>
+              onPress={(event) => {
+                event.stopPropagation();
+                void Linking.openURL(
+                  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`,
+                );
+              }}>
               <ThemedText type="linkPrimary">{directionsLabel}</ThemedText>
             </Pressable>
           ) : null}

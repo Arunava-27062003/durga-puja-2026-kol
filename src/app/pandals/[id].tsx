@@ -14,6 +14,11 @@ export default function PandalDetailScreen() {
   const { content } = useAppContent();
   const { config, pandals } = content;
   const pandal = pandals.find((p) => p.id === id);
+  const directionsQuery = pandal
+    ? pandal.lat !== null && pandal.lng !== null
+      ? `${pandal.lat},${pandal.lng}`
+      : [pandal.name, pandal.address, config.district].filter(Boolean).join(', ')
+    : '';
 
   if (!pandal) {
     return (
@@ -41,6 +46,11 @@ export default function PandalDetailScreen() {
           <ThemedText type="smallBold" themeColor="textSecondary">
             {pandal.area}
           </ThemedText>
+          {pandal.budgetCategory ? (
+            <ThemedText type="small" themeColor="textSecondary">
+              {pandal.budgetCategory}
+            </ThemedText>
+          ) : null}
           <ThemedText type="default" style={styles.description}>
             {pandal.description}
           </ThemedText>
@@ -52,24 +62,24 @@ export default function PandalDetailScreen() {
             </ThemedText>
           </ThemedView>
 
-          <ThemedView style={styles.section}>
-            <ThemedText type="smallBold">{getCopy(config, 'pandalTimings', 'Timings')}</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              {pandal.timings}
-            </ThemedText>
-          </ThemedView>
-
-          {pandal.lat !== null && pandal.lng !== null ? (
-            <ThemedText
-              type="linkPrimary"
-              onPress={() =>
-                Linking.openURL(
-                  `https://www.google.com/maps/search/?api=1&query=${pandal.lat},${pandal.lng}`,
-                )
-              }>
-              {getCopy(config, 'directionsAction', 'Get Directions')}
-            </ThemedText>
+          {pandal.timings ? (
+            <ThemedView style={styles.section}>
+              <ThemedText type="smallBold">{getCopy(config, 'pandalTimings', 'Timings')}</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">
+                {pandal.timings}
+              </ThemedText>
+            </ThemedView>
           ) : null}
+
+          <ThemedText
+            type="linkPrimary"
+            onPress={() =>
+              Linking.openURL(
+                `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(directionsQuery)}`,
+              )
+            }>
+            {getCopy(config, 'directionsAction', 'Get Directions')}
+          </ThemedText>
         </ScrollView>
       </SafeAreaView>
     </ThemedView>

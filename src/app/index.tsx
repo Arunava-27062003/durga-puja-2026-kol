@@ -491,6 +491,8 @@ export default function HomeScreen() {
           <PujaGuideModal
             visible={showPujaGuide}
             imageUrls={guideMapUrls}
+            imageAspectRatios={config.media.guideMapAspectRatios}
+            pageLabels={config.media.guideMapLabels}
             onClose={() => setShowPujaGuide(false)}
           />
         ) : null}
@@ -508,6 +510,7 @@ export default function HomeScreen() {
         />
         {guideMapUrl ? (
           <MapViewerModal
+            key={showMap ? 'guide-map-open' : 'guide-map-closed'}
             visible={showMap}
             imageUrl={guideMapUrl}
             imageAspectRatio={config.media.guideMapAspectRatio}

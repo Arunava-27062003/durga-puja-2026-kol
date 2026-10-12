@@ -22,6 +22,7 @@ export type Pandal = {
   timings: string;
   verified: boolean;
   imageUrl?: string | null;
+  budgetCategory?: string;
 };
 
 export type NearbyPlace = {
@@ -86,6 +87,8 @@ export type AppConfig = {
     guideMapImageUrl?: string;
     guideMapImageUrls?: string[];
     guideMapAspectRatio?: number;
+    guideMapAspectRatios?: number[];
+    guideMapLabels?: string[];
     promoVideoUrl?: string;
     welcomeBackgroundImageUrl?: string;
     policeLogoImageUrl?: string;
